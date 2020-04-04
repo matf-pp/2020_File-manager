@@ -1,17 +1,31 @@
 package com.matf.filemanager
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Color
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
+import android.widget.TextView
 import java.io.File
 
 class FileManagerAdapter : BaseAdapter() {
-    private var context: Context? = null
     private var currentDirectoryIndex: Int = -1
-    private var history: ArrayList<FileEntry> = ArrayList()
-    private var currentSubdirectories: ArrayList<FileEntry>? = null
+    var history: ArrayList<FileEntry> = ArrayList()
+    var currentSubdirectories: ArrayList<FileEntry> = ArrayList()
+
+    private var mInflator: LayoutInflater? = null
+
+    fun init(entry: FileEntry, context: Context) {
+        mInflator = LayoutInflater.from(context)
+        currentDirectoryIndex = 0;
+        history.clear()
+
+        history.add(entry)
+        sync()
+    }
 
     fun goTo(entry: FileEntry): Boolean{
         if(! entry.file.isDirectory){
@@ -28,52 +42,55 @@ class FileManagerAdapter : BaseAdapter() {
             history.add(entry)
             currentDirectoryIndex++
         }
-        currentSubdirectories = history.get(currentDirectoryIndex).listFileEntries()
-
-        notifyDataSetChanged()
+        sync()
         return true
     }
 
     fun goBack(): Boolean{
         if(currentDirectoryIndex == 0) return false
         currentDirectoryIndex--
-        notifyDataSetChanged()
+        sync()
         return true
     }
 
     fun goForward(): Boolean{
         if(currentDirectoryIndex == history.size - 1) return false
         currentDirectoryIndex++
-        notifyDataSetChanged()
+        sync()
         return true
     }
 
+    fun sync() {
+        currentSubdirectories = history.get(currentDirectoryIndex).listFileEntries()
+        notifyDataSetChanged()
+    }
 
 
-    override fun getView(p0: Int, p1: View?, p2: ViewGroup?): View {
+    @SuppressLint("ViewHolder")
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         val view: View = this.mInflator!!.inflate(R.layout.listitem, parent, false)
-        view.findViewById<TextView>(R.id.fileTitletv).text = files[position].name
-        if (!files[position].isDirectory)
+        view.findViewById<TextView>(R.id.fileTitletv).text = currentSubdirectories[position].file.name
+        if (!currentSubdirectories[position].file.isDirectory)
             view.findViewById<TextView>(R.id.fileSizetv).text =
-                "size: " + files[position].length().toString() + " bytes"
+                "size: " + currentSubdirectories[position].file.length().toString() + " bytes"
         else
             view.findViewById<TextView>(R.id.fileSizetv).text = ""
-        if (selected[position]){
-            view.setBackgroundColor(Color.RED)
-        }
+//        if (selected[position]){
+//            view.setBackgroundColor(Color.RED)
+//        }
         return view
     }
 
-    override fun getItem(p0: Int): Any {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun getItem(position: Int): Any {
+        return currentSubdirectories[position]
     }
 
-    override fun getItemId(p0: Int): Long {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
     }
 
     override fun getCount(): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return currentSubdirectories.size
     }
 
 }

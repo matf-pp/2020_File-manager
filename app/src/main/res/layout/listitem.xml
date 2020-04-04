@@ -1,49 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#FFFFFF"
-    android:orientation="vertical">
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="87dp"
+        android:layout_height="66dp"
+        android:layout_weight="0"
+        android:contentDescription="@null"
+        android:visibility="visible"
+        app:srcCompat="@drawable/emptyfolder"/>
 
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_width="253dp"
+        android:layout_height="66dp"
+        android:orientation="vertical">
 
-        <Button
-            android:id="@+id/dederbtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Deder" />
+        <TextView
+            android:id="@+id/fileTitletv"
+            android:layout_width="match_parent"
+            android:layout_height="41dp"
+            android:gravity="start" />
 
-        <Button
-            android:id="@+id/backbtn"
-            android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/fileSizetv"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:enabled="false"
-            android:text="Back" />
-
-        <Button
-            android:id="@+id/forwardbtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:enabled="false"
-            android:text="Forward" />
-        <Button
-            android:id="@+id/copybtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Copy"
-            />
+            android:gravity="start" />
     </LinearLayout>
 
-
-    <ListView
-        android:id="@+id/mListView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="20dp"
-        android:choiceMode="multipleChoice"
-        />
-
-
+    <ImageView
+        android:id="@+id/properties"
+        android:layout_width="40dp"
+        android:layout_height="66dp"
+        android:contentDescription="@null"
+        android:visibility="visible"
+        app:srcCompat="@drawable/dots" />
 </LinearLayout>

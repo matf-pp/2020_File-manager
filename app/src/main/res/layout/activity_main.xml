@@ -10,23 +10,17 @@
         android:layout_height="wrap_content">
 
         <Button
-            android:id="@+id/dederbtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Deder" />
-
-        <Button
             android:id="@+id/backbtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:enabled="false"
+            android:enabled="true"
             android:text="Back" />
 
         <Button
             android:id="@+id/forwardbtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:enabled="false"
+            android:enabled="true"
             android:text="Forward" />
         <Button
             android:id="@+id/copybtn"
