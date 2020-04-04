@@ -15,6 +15,7 @@ class FileManagerAdapter : BaseAdapter() {
     private var currentDirectoryIndex: Int = -1
     var history: ArrayList<FileEntry> = ArrayList()
     var currentSubdirectories: ArrayList<FileEntry> = ArrayList()
+    var selectionMode: Boolean = false
 
     private var mInflator: LayoutInflater? = null
 
@@ -62,9 +63,34 @@ class FileManagerAdapter : BaseAdapter() {
 
     fun sync() {
         currentSubdirectories = history.get(currentDirectoryIndex).listFileEntries()
+        if(selectionMode) toggleSelectionMode()
         notifyDataSetChanged()
     }
 
+    fun toggleSelectionMode(){
+        if(selectionMode){
+            selectionMode = false
+            for (f in currentSubdirectories){
+                f.selected = false
+            }
+        }else{
+            selectionMode = true
+        }
+        notifyDataSetChanged()
+    }
+
+    fun toggleSelectionAt(i: Int){
+        currentSubdirectories[i].selected = !currentSubdirectories[i].selected
+        notifyDataSetChanged()
+    }
+
+    fun printSelected(){
+        for (f in currentSubdirectories){
+            if(f.selected){
+                Log.d("SELEKTOVANO:", f.file.name)
+            }
+        }
+    }
 
     @SuppressLint("ViewHolder")
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
@@ -75,9 +101,10 @@ class FileManagerAdapter : BaseAdapter() {
                 "size: " + currentSubdirectories[position].file.length().toString() + " bytes"
         else
             view.findViewById<TextView>(R.id.fileSizetv).text = ""
-//        if (selected[position]){
-//            view.setBackgroundColor(Color.RED)
-//        }
+
+        if (currentSubdirectories[position].selected){
+            view.setBackgroundColor(Color.RED)
+        }
         return view
     }
 

@@ -49,25 +49,52 @@ class MainActivity : AppCompatActivity() {
 
         val btnBack = findViewById<Button>(R.id.backbtn)
         val btnForward = findViewById<Button>(R.id.forwardbtn)
+        val btnCopy = findViewById<Button>(R.id.copybtn)
 
         adapter.init(FileEntry(Environment.getExternalStorageDirectory(), false), this)
         lista.adapter = adapter
 
         lista.setOnItemClickListener { _, _, position, _ ->
-            if (!adapter.goTo(lista.getItemAtPosition(position) as FileEntry)) {
-                Toast.makeText(this, "otvori ovaj fajl", Toast.LENGTH_SHORT).show()
+            if(!adapter.selectionMode){
+                if (!adapter.goTo(lista.getItemAtPosition(position) as FileEntry)) {
+                    Toast.makeText(this, "otvori ovaj fajl", Toast.LENGTH_SHORT).show()
+                }
+            }else{
+                adapter.toggleSelectionAt(position)
             }
+
         }
 
-        btnBack.setOnClickListener {
-            if (!adapter.goBack()) {
-                Toast.makeText(this, "greska", Toast.LENGTH_SHORT).show()
+        lista.setOnItemLongClickListener { adapterView, view, position, l ->
+            Toast.makeText(this, "AAAAAAAA", Toast.LENGTH_SHORT)
+            if(!adapter.selectionMode){
+
+                adapter.toggleSelectionMode()
+                adapter.toggleSelectionAt(position)
             }
+            true
+        }
+
+
+        btnBack.setOnClickListener {
+            if(adapter.selectionMode) {
+                adapter.toggleSelectionMode()
+            }else{
+                if (!adapter.goBack()) {
+                    Toast.makeText(this, "greska", Toast.LENGTH_SHORT).show()
+                }
+            }
+
         }
         btnForward.setOnClickListener {
             if (!adapter.goForward()) {
                 Toast.makeText(this, "greska", Toast.LENGTH_SHORT).show()
             }
         }
+
+        btnCopy.setOnClickListener {
+            adapter.printSelected();
+        }
+
     }
 }
