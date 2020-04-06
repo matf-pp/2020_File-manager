@@ -5,43 +5,17 @@ import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
-import android.util.Log
 import android.widget.Button
 import android.widget.ListView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import kotlinx.android.synthetic.main.activity_main.*
-import java.io.File
 
 class MainActivity : AppCompatActivity() {
 
-    val adapter: FileManagerAdapter = FileManagerAdapter()
+    private val adapter: FileManagerAdapter = FileManagerAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val permission = ContextCompat.checkSelfPermission(
-            this,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        )
-
-        if (permission != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 5
-            )
-        }
-        val permission2 = ContextCompat.checkSelfPermission(
-            this,
-            Manifest.permission.MANAGE_DOCUMENTS
-        )
-
-        if (permission2 != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.MANAGE_DOCUMENTS), 5
-            )
-        }
-
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
@@ -51,8 +25,19 @@ class MainActivity : AppCompatActivity() {
         val btnForward = findViewById<Button>(R.id.forwardbtn)
         val btnCopy = findViewById<Button>(R.id.copybtn)
 
-        adapter.init(FileEntry(Environment.getExternalStorageDirectory(), false), this)
-        lista.adapter = adapter
+        val permission = ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        )
+
+        if (permission == PackageManager.PERMISSION_GRANTED) {
+            initDirectory()
+        } else {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 0
+            )
+        }
 
         lista.setOnItemClickListener { _, _, position, _ ->
             if(!adapter.selectionMode){
@@ -62,7 +47,6 @@ class MainActivity : AppCompatActivity() {
             }else{
                 adapter.toggleSelectionAt(position)
             }
-
         }
 
         lista.setOnItemLongClickListener { adapterView, view, position, l ->
@@ -75,7 +59,6 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
-
         btnBack.setOnClickListener {
             if(adapter.selectionMode) {
                 adapter.toggleSelectionMode()
@@ -86,6 +69,7 @@ class MainActivity : AppCompatActivity() {
             }
 
         }
+
         btnForward.setOnClickListener {
             if (!adapter.goForward()) {
                 Toast.makeText(this, "greska", Toast.LENGTH_SHORT).show()
@@ -97,4 +81,34 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
+
+    fun initDirectory() {
+        val lista = findViewById<ListView>(R.id.mListView)
+        val btnBack = findViewById<Button>(R.id.backbtn)
+        val btnForward = findViewById<Button>(R.id.forwardbtn)
+
+        adapter.init(FileEntry(Environment.getExternalStorageDirectory(), false), this)
+        lista.adapter = adapter
+
+        btnBack.isEnabled = true
+        btnForward.isEnabled = true
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        if (requestCode == 0) {
+            if (!grantResults.contains(PackageManager.PERMISSION_DENIED)) {
+                initDirectory()
+            } else {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 0
+                )
+            }
+        }
+    }
+
 }

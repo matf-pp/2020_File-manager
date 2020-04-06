@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
-import java.io.File
 
 class FileManagerAdapter : BaseAdapter() {
     private var currentDirectoryIndex: Int = -1

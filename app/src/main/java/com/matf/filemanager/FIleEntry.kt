@@ -1,7 +1,6 @@
 package com.matf.filemanager
 
 import java.io.File
-import java.net.URI
 
 class FileEntry (var file: File, var selected: Boolean){
 
