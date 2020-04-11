@@ -1,10 +1,12 @@
 package com.matf.filemanager
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
+import android.util.Log
 import android.widget.Button
 import android.widget.ListView
 import android.widget.Toast
@@ -41,8 +43,11 @@ class MainActivity : AppCompatActivity() {
 
         lista.setOnItemClickListener { _, _, position, _ ->
             if(!adapter.selectionMode){
-                if (!adapter.goTo(lista.getItemAtPosition(position) as FileEntry)) {
-                    Toast.makeText(this, "otvori ovaj fajl", Toast.LENGTH_SHORT).show()
+                val item: FileEntry = lista.getItemAtPosition(position) as FileEntry
+                if (!adapter.goTo(item)) {
+                    val intent = Intent(this, TextFileActivity::class.java)
+                    intent.putExtra("file_path", item.file.absolutePath.toString())
+                    startActivity(intent)
                 }
             }else{
                 adapter.toggleSelectionAt(position)
@@ -50,7 +55,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         lista.setOnItemLongClickListener { adapterView, view, position, l ->
-            Toast.makeText(this, "AAAAAAAA", Toast.LENGTH_SHORT)
+
             if(!adapter.selectionMode){
 
                 adapter.toggleSelectionMode()
