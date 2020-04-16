@@ -45,6 +45,7 @@ class MainActivity : AppCompatActivity() {
             if(!adapter.selectionMode){
                 val item: FileEntry = lista.getItemAtPosition(position) as FileEntry
                 if (!adapter.goTo(item)) {
+                    //NISAM PREVISE SIGURAN DA OVO TREBA DA BUDE OVDE, MOZDA TREBA U FILEMANAGERADAPTER-U
                     val intent = Intent(this, TextFileActivity::class.java)
                     intent.putExtra("file_path", item.file.absolutePath.toString())
                     startActivity(intent)

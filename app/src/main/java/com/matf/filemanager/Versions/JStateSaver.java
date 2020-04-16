@@ -46,4 +46,8 @@ public class JStateSaver<T> implements JVersionable<T> {
         currentInstanceIndex++;
         return true;
     }
+
+    public ArrayList<T> getHistory() {
+        return history;
+    }
 }
