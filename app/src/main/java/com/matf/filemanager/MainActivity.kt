@@ -45,10 +45,18 @@ class MainActivity : AppCompatActivity() {
             if(!adapter.selectionMode){
                 val item: FileEntry = lista.getItemAtPosition(position) as FileEntry
                 if (!adapter.goTo(item)) {
-                    //NISAM PREVISE SIGURAN DA OVO TREBA DA BUDE OVDE, MOZDA TREBA U FILEMANAGERADAPTER-U
-                    val intent = Intent(this, TextFileActivity::class.java)
-                    intent.putExtra("file_path", item.file.absolutePath.toString())
-                    startActivity(intent)
+                    if(item.file.absolutePath.endsWith(".jpeg") || item.file.absolutePath.endsWith(".jpg") || item.file.absolutePath.endsWith(".png") || item.file.absolutePath.endsWith(".JPG")){
+                        Toast.makeText(this, "Kliknuo si na sliku!", Toast.LENGTH_LONG)
+                        val intent = Intent(this, ImageFileActivity::class.java)
+                        intent.putExtra("file_path", item.file.absolutePath.toString())
+                        startActivity(intent)
+                    }
+                    else {
+                        //NISAM PREVISE SIGURAN DA OVO TREBA DA BUDE OVDE, MOZDA TREBA U FILEMANAGERADAPTER-U
+                        val intent = Intent(this, TextFileActivity::class.java)
+                        intent.putExtra("file_path", item.file.absolutePath.toString())
+                        startActivity(intent)
+                    }
                 }
             }else{
                 adapter.toggleSelectionAt(position)

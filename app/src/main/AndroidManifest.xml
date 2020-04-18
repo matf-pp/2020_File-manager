@@ -15,6 +15,8 @@
             android:name=".TextFileActivity"
             android:windowSoftInputMode="adjustResize">
         </activity>
+        <activity android:name=".TextFileActivity"></activity>
+        <activity android:name=".ImageFileActivity"></activity>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
