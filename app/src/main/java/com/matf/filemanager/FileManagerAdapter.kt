@@ -9,10 +9,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
+import android.widget.Toast
+import com.matf.filemanager.Versions.JStateSaver
+import com.matf.filemanager.Versions.JVersionable
+import org.json.JSONTokener
 
-class FileManagerAdapter : BaseAdapter() {
-    private var currentDirectoryIndex: Int = -1
-    var history: ArrayList<FileEntry> = ArrayList()
+class FileManagerAdapter : BaseAdapter(), JVersionable<FileEntry> {
+    private var stateSaver: JStateSaver<FileEntry> = JStateSaver<FileEntry>(null)
     var currentSubdirectories: ArrayList<FileEntry> = ArrayList()
     var selectionMode: Boolean = false
 
@@ -20,48 +23,50 @@ class FileManagerAdapter : BaseAdapter() {
 
     fun init(entry: FileEntry, context: Context) {
         mInflator = LayoutInflater.from(context)
-        currentDirectoryIndex = 0;
-        history.clear()
-
-        history.add(entry)
+        stateSaver = JStateSaver(entry)
         sync()
     }
 
-    fun goTo(entry: FileEntry): Boolean{
-        if(! entry.file.isDirectory){
-            Log.d("TODO", "Proveriti kog tipa je fajl i otvoriti odgovarajuci program/nas ugradjen sistem za otvaranje")
+    override fun getCurrentInstance(): FileEntry {
+        return stateSaver.currentInstance
+    }
+
+    override fun goTo(newElement: FileEntry?): Boolean {
+        if(newElement == null) return false;
+        if(newElement.file.isDirectory){
+            if(stateSaver.goTo(newElement)){
+                sync()
+                return true
+            }else{
+                //OVO NE BI TREBALO DA MOZE DA SE DESI UOPSTE
+                return false;
+            }
+        }else{
+            Log.d("TODO", "OPEN THIS FILE")
             return false
         }
-        if(currentDirectoryIndex == history.size - 1){
-            history.add(entry)
-            currentDirectoryIndex++
-        }else{
-            for(i in history.size - 1 downTo currentDirectoryIndex + 1){
-                history.removeAt(i)
-            }
-            history.add(entry)
-            currentDirectoryIndex++
+
+
+    }
+
+    override fun goBack(): Boolean {
+        if(stateSaver.goBack()){
+            sync();
+            return true;
         }
-        sync()
-        return true
+        return false;
     }
 
-    fun goBack(): Boolean{
-        if(currentDirectoryIndex == 0) return false
-        currentDirectoryIndex--
-        sync()
-        return true
-    }
-
-    fun goForward(): Boolean{
-        if(currentDirectoryIndex == history.size - 1) return false
-        currentDirectoryIndex++
-        sync()
-        return true
+    override fun goForward(): Boolean {
+        if(stateSaver.goForward()){
+            sync();
+            return true;
+        }
+        return false;
     }
 
     fun sync() {
-        currentSubdirectories = history.get(currentDirectoryIndex).listFileEntries()
+        currentSubdirectories = currentInstance.listFileEntries()
         if(selectionMode) toggleSelectionMode()
         notifyDataSetChanged()
     }
