@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">File Manager</string>
+
+    <string name="back">Back</string>
+    <string name="forward">Forward</string>
+    <string name="copy">Copy</string>
 </resources>
