@@ -19,6 +19,8 @@ class FileManagerAdapter : BaseAdapter(), JVersionable<FileEntry> {
     var currentSubdirectories: ArrayList<FileEntry> = ArrayList()
     var selectionMode: Boolean = false
 
+
+
     private var mInflator: LayoutInflater? = null
 
     fun init(entry: FileEntry, context: Context) {
