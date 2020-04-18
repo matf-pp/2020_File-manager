@@ -50,4 +50,23 @@ public class JStateSaver<T> implements JVersionable<T> {
     public ArrayList<T> getHistory() {
         return history;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder();
+        for(int i = 0; i < history.size(); i++){
+            if(i == currentInstanceIndex){
+                sb.append("[[");
+            }
+            sb.append(history.get(i).toString());
+            if(i == currentInstanceIndex){
+                sb.append("]]");
+            }
+            if(i != history.size() - 1){
+                sb.append(" -> ");
+            }
+        }
+
+        return sb.toString();
+    }
 }

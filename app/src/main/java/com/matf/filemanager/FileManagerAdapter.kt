@@ -45,8 +45,6 @@ class FileManagerAdapter : BaseAdapter(), JVersionable<FileEntry> {
             Log.d("TODO", "OPEN THIS FILE")
             return false
         }
-
-
     }
 
     override fun goBack(): Boolean {
