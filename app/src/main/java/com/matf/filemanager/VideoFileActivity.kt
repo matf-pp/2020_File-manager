@@ -21,6 +21,7 @@ class VideoFileActivity : AppCompatActivity() {
         val mediaController = MediaController(this)
         mediaController.setAnchorView(videoView)
         videoView.setMediaController(mediaController)
+        videoView.keepScreenOn = true
 
         videoView.setVideoPath(path)
         videoView.requestFocus()
