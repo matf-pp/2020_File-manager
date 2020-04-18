@@ -30,15 +30,10 @@ class TextFileActivity : AppCompatActivity() {
         val btnRedo = findViewById<Button>(R.id.redobtn)
         val btnSave = findViewById<Button>(R.id.savebtn)
 
-        val changetracker = findViewById<TextView>(R.id.changetrack)
-
-
-
         val filePath = intent.getStringExtra("file_path")
         titletv.text = "EDITING FILE: " + filePath
 
         textEditor = JTextEditor(filePath)
-        changetracker.text = textEditor!!.toString()
         fileet.setText(textEditor!!.currentInstance)
 
         fileet.addTextChangedListener(object : TextWatcher {
@@ -56,7 +51,6 @@ class TextFileActivity : AppCompatActivity() {
 
                 if(abs(newText.length - oldText.length) > 5){
                     Log.d("TEXT-CHANGED", "SIGNIFICANT CHANGE DETECTED")
-                    changetracker.text = textEditor!!.toString()
                     textEditor!!.goTo(newText)
                 }
             }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -10,41 +10,42 @@
         android:id="@+id/titletv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:ignore="MissingConstraints" />
+        android:layout_alignParentTop="true"
+        />
+
     <EditText
+        android:id="@+id/fileet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/fileet"
-        />
+        android:layout_above="@id/text_file_menu"
+        android:layout_below="@id/titletv"
+        android:inputType="textMultiLine" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:id="@+id/text_file_menu"
+        android:fitsSystemWindows="true"
+        android:layout_alignParentBottom="true">
+
         <Button
             android:id="@+id/undobtn"
-            android:text="Undo"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_width="wrap_content" />
+            android:text="Undo" />
+
         <Button
             android:id="@+id/redobtn"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Redo"
-            android:layout_width="wrap_content" />
+            android:text="Redo" />
+
         <Button
             android:id="@+id/savebtn"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Save"
-            android:layout_width="wrap_content" />
+            android:text="Save" />
     </LinearLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="DEBUG CHANGE TRACKER: "
-        />
-    <TextView
-        android:id="@+id/changetrack"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        />
-</LinearLayout>
+</RelativeLayout>
