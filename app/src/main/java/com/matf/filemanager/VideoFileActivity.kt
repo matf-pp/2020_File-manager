@@ -1,5 +1,6 @@
 package com.matf.filemanager
 
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.view.Window
 import android.view.WindowManager
@@ -25,6 +26,7 @@ class VideoFileActivity : AppCompatActivity() {
             supportActionBar?.hide()
 
         setContentView(R.layout.activity_video_file)
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR
 
         val path = intent.getStringExtra("file_path")
 
