@@ -30,12 +30,15 @@ class TextFileActivity : AppCompatActivity() {
         val btnRedo = findViewById<Button>(R.id.redobtn)
         val btnSave = findViewById<Button>(R.id.savebtn)
 
+        val changetracker = findViewById<TextView>(R.id.changetrack)
+
 
 
         val filePath = intent.getStringExtra("file_path")
         titletv.text = "EDITING FILE: " + filePath
 
         textEditor = JTextEditor(filePath)
+        changetracker.text = textEditor!!.toString()
         fileet.setText(textEditor!!.currentInstance)
 
         fileet.addTextChangedListener(object : TextWatcher {
@@ -53,12 +56,14 @@ class TextFileActivity : AppCompatActivity() {
 
                 if(abs(newText.length - oldText.length) > 5){
                     Log.d("TEXT-CHANGED", "SIGNIFICANT CHANGE DETECTED")
+                    changetracker.text = textEditor!!.toString()
                     textEditor!!.goTo(newText)
                 }
             }
         })
 
         btnUndo.setOnClickListener {
+
             if(textEditor!!.goBack()){
                 fileet.setText(textEditor!!.currentInstance)
             }
@@ -76,13 +81,7 @@ class TextFileActivity : AppCompatActivity() {
                 textEditor!!.goTo(currText)
             }
             val ss: SaveStatus  = textEditor!!.saveChanges()
-            if(ss == SaveStatus.FILESAVED){
-                Toast.makeText(this, "Changes saved!", Toast.LENGTH_LONG).show()
-            }else if (ss == SaveStatus.FILENOTCHANGED){
-                Toast.makeText(this, "No changes to save!", Toast.LENGTH_LONG).show()
-            }else if (ss == SaveStatus.ERRORSAVING){
-                Toast.makeText(this, "An error has occurred!", Toast.LENGTH_LONG).show()
-            }
+            Toast.makeText(this, ss.toString(), Toast.LENGTH_LONG).show()
         }
 
 
