@@ -11,6 +11,8 @@ import kotlinx.android.synthetic.main.activity_video_file.*
 
 class VideoFileActivity : AppCompatActivity() {
 
+    var continueFrom = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -36,6 +38,18 @@ class VideoFileActivity : AppCompatActivity() {
         videoView.requestFocus()
 
         videoView.start()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        continueFrom = videoView.currentPosition
+        videoView.stopPlayback()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        videoView.seekTo(continueFrom)
+//        videoView.start()
     }
 
 }
