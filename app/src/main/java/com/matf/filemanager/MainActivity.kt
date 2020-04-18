@@ -45,9 +45,17 @@ class MainActivity : AppCompatActivity() {
             if(!adapter.selectionMode){
                 val item: FileEntry = lista.getItemAtPosition(position) as FileEntry
                 if (!adapter.goTo(item)) {
-                    val intent = Intent(this, TextFileActivity::class.java)
-                    intent.putExtra("file_path", item.file.absolutePath.toString())
-                    startActivity(intent)
+                    // TODO Pomeriti ovo u adapter.goTo
+//                    println(item.file.extension)
+                    if(item.file.extension.matches(Regex("^(txt|html|css|js|c|h|cpp|hpp|py|java)$"))) {
+                        val intent = Intent(this, TextFileActivity::class.java)
+                        intent.putExtra("file_path", item.file.absolutePath.toString())
+                        startActivity(intent)
+                    } else if(item.file.extension.matches(Regex("^(mp4|mkv|webm)$"))) {
+                        val intent = Intent(this, VideoFileActivity::class.java)
+                        intent.putExtra("file_path", item.file.absolutePath.toString())
+                        startActivity(intent)
+                    }
                 }
             }else{
                 adapter.toggleSelectionAt(position)
