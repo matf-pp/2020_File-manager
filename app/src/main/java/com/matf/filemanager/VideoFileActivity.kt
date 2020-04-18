@@ -34,6 +34,13 @@ class VideoFileActivity : AppCompatActivity() {
         videoView.setMediaController(mediaController)
         videoView.keepScreenOn = true
 
+//        videoView.setOnCompletionListener {}
+        videoView.setOnErrorListener { mediaPlayer, i, i2 ->
+            Toast.makeText(applicationContext, "Error playing media", Toast.LENGTH_LONG).show()
+            finish()
+            false
+        }
+
         videoView.setVideoPath(path)
         videoView.requestFocus()
 
