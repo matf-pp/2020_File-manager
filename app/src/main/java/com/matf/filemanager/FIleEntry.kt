@@ -6,7 +6,7 @@ class FileEntry (var file: File, var selected: Boolean){
 
     fun listFileEntries(): ArrayList<FileEntry> {
         var ret: ArrayList<FileEntry> = ArrayList()
-        for (f: File in file.listFiles()){
+        for (f: File in file.listFiles().sorted()){
             ret.add(FileEntry(f, false))
         }
         return ret
