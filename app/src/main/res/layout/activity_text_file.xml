@@ -16,5 +16,35 @@
         android:layout_height="wrap_content"
         android:id="@+id/fileet"
         />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/undobtn"
+            android:text="Undo"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content" />
+        <Button
+            android:id="@+id/redobtn"
+            android:layout_height="wrap_content"
+            android:text="Redo"
+            android:layout_width="wrap_content" />
+        <Button
+            android:id="@+id/savebtn"
+            android:layout_height="wrap_content"
+            android:text="Save"
+            android:layout_width="wrap_content" />
+    </LinearLayout>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="DEBUG CHANGE TRACKER: "
+        />
+    <TextView
+        android:id="@+id/changetrack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
 </LinearLayout>
