@@ -8,35 +8,31 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
+import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
-import com.matf.filemanager.Versions.JStateSaver
-import com.matf.filemanager.Versions.JVersionable
-import org.json.JSONTokener
+import com.matf.filemanager.Versions.StateSaver
+import com.matf.filemanager.Versions.Versionable
 
-class FileManagerAdapter : BaseAdapter(), JVersionable<FileEntry> {
-    private var stateSaver: JStateSaver<FileEntry> = JStateSaver<FileEntry>(null)
+class FileManagerAdapter : BaseAdapter(), Versionable<FileEntry> {
+    private var stateSaver: StateSaver<FileEntry>? = null
     var currentSubdirectories: ArrayList<FileEntry> = ArrayList()
     var selectionMode: Boolean = false
-
-
 
     private var mInflator: LayoutInflater? = null
 
     fun init(entry: FileEntry, context: Context) {
         mInflator = LayoutInflater.from(context)
-        stateSaver = JStateSaver(entry)
+        stateSaver = StateSaver(entry)
         sync()
     }
 
     override fun getCurrentInstance(): FileEntry {
-        return stateSaver.currentInstance
+        return stateSaver!!.getCurrentInstance()
     }
 
-    override fun goTo(newElement: FileEntry?): Boolean {
-        if(newElement == null) return false;
+    override fun goTo(newElement: FileEntry): Boolean {
         if(newElement.file.isDirectory){
-            if(stateSaver.goTo(newElement)){
+            if(stateSaver!!.goTo(newElement)){
                 sync()
                 return true
             }else{
@@ -50,7 +46,7 @@ class FileManagerAdapter : BaseAdapter(), JVersionable<FileEntry> {
     }
 
     override fun goBack(): Boolean {
-        if(stateSaver.goBack()){
+        if(stateSaver!!.goBack()){
             sync();
             return true;
         }
@@ -58,7 +54,7 @@ class FileManagerAdapter : BaseAdapter(), JVersionable<FileEntry> {
     }
 
     override fun goForward(): Boolean {
-        if(stateSaver.goForward()){
+        if(stateSaver!!.goForward()){
             sync();
             return true;
         }
@@ -66,7 +62,7 @@ class FileManagerAdapter : BaseAdapter(), JVersionable<FileEntry> {
     }
 
     fun sync() {
-        currentSubdirectories = currentInstance.listFileEntries()
+        currentSubdirectories = getCurrentInstance().listFileEntries()
         if(selectionMode) toggleSelectionMode()
         notifyDataSetChanged()
     }
@@ -100,6 +96,24 @@ class FileManagerAdapter : BaseAdapter(), JVersionable<FileEntry> {
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         val view: View = this.mInflator!!.inflate(R.layout.listitem, parent, false)
         view.findViewById<TextView>(R.id.fileTitletv).text = currentSubdirectories[position].file.name
+
+        val imageView: ImageView = view.findViewById<ImageView>(R.id.icon)
+
+        if(!currentSubdirectories[position].file.isDirectory){
+            if(currentSubdirectories[position].file.extension.matches(Regex("^(jpg|jpeg|png|JPG)$"))){
+                imageView.setImageResource(R.drawable.image)
+            }
+            else if(currentSubdirectories[position].file.extension.matches(Regex("^(mp4|mkv|webm)$"))){
+                imageView.setImageResource(R.drawable.music)
+            }
+            else{
+                imageView.setImageResource(R.drawable.text)
+            }
+        }
+        else{
+            imageView.setImageResource(R.drawable.emptyfolder)
+        }
+
         if (!currentSubdirectories[position].file.isDirectory)
             view.findViewById<TextView>(R.id.fileSizetv).text =
                 "size: " + currentSubdirectories[position].file.length().toString() + " bytes"
@@ -107,7 +121,7 @@ class FileManagerAdapter : BaseAdapter(), JVersionable<FileEntry> {
             view.findViewById<TextView>(R.id.fileSizetv).text = ""
 
         if (currentSubdirectories[position].selected){
-            view.setBackgroundColor(Color.RED)
+            view.setBackgroundColor(Color.DKGRAY)
         }
         return view
     }
@@ -123,5 +137,4 @@ class FileManagerAdapter : BaseAdapter(), JVersionable<FileEntry> {
     override fun getCount(): Int {
         return currentSubdirectories.size
     }
-
 }
