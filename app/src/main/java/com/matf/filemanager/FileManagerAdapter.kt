@@ -3,16 +3,17 @@ package com.matf.filemanager
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
+import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import com.matf.filemanager.Versions.JStateSaver
 import com.matf.filemanager.Versions.JVersionable
-import org.json.JSONTokener
+
 
 class FileManagerAdapter : BaseAdapter(), JVersionable<FileEntry> {
     private var stateSaver: JStateSaver<FileEntry> = JStateSaver<FileEntry>(null)
@@ -100,6 +101,24 @@ class FileManagerAdapter : BaseAdapter(), JVersionable<FileEntry> {
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         val view: View = this.mInflator!!.inflate(R.layout.listitem, parent, false)
         view.findViewById<TextView>(R.id.fileTitletv).text = currentSubdirectories[position].file.name
+
+        val imageView: ImageView = view.findViewById<ImageView>(R.id.icon)
+
+        if(!currentSubdirectories[position].file.isDirectory){
+            if(currentSubdirectories[position].file.extension.matches(Regex("^(jpg|jpeg|png|JPG)$"))){
+                imageView.setImageResource(R.drawable.image)
+            }
+            else if(currentSubdirectories[position].file.extension.matches(Regex("^(mp4|mkv|webm)$"))){
+                imageView.setImageResource(R.drawable.music)
+            }
+            else{
+                imageView.setImageResource(R.drawable.text)
+            }
+        }
+        else{
+            imageView.setImageResource(R.drawable.emptyfolder)
+        }
+
         if (!currentSubdirectories[position].file.isDirectory)
             view.findViewById<TextView>(R.id.fileSizetv).text =
                 "size: " + currentSubdirectories[position].file.length().toString() + " bytes"
@@ -107,7 +126,7 @@ class FileManagerAdapter : BaseAdapter(), JVersionable<FileEntry> {
             view.findViewById<TextView>(R.id.fileSizetv).text = ""
 
         if (currentSubdirectories[position].selected){
-            view.setBackgroundColor(Color.RED)
+            view.setBackgroundColor(Color.DKGRAY)
         }
         return view
     }
@@ -123,5 +142,4 @@ class FileManagerAdapter : BaseAdapter(), JVersionable<FileEntry> {
     override fun getCount(): Int {
         return currentSubdirectories.size
     }
-
 }

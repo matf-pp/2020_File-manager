@@ -45,17 +45,22 @@ class MainActivity : AppCompatActivity() {
             if(!adapter.selectionMode){
                 val item: FileEntry = lista.getItemAtPosition(position) as FileEntry
                 if (!adapter.goTo(item)) {
-                    if(item.file.absolutePath.endsWith(".jpeg") || item.file.absolutePath.endsWith(".jpg") || item.file.absolutePath.endsWith(".png") || item.file.absolutePath.endsWith(".JPG")){
-                        Toast.makeText(this, "Kliknuo si na sliku!", Toast.LENGTH_LONG)
+                    if(item.file.extension.matches(Regex("^(jpg|jpeg|png|JPG)$"))){
                         val intent = Intent(this, ImageFileActivity::class.java)
                         intent.putExtra("file_path", item.file.absolutePath.toString())
                         startActivity(intent)
                     }
-                    else {
+                    else if(item.file.extension.matches(Regex("^(mp4|mkv|webm)$"))){
+                        
+                    }
+                    else if(item.file.extension.matches(Regex("^(txt|html|css|js|c|h|cpp|hpp|py|java)$"))){
                         //NISAM PREVISE SIGURAN DA OVO TREBA DA BUDE OVDE, MOZDA TREBA U FILEMANAGERADAPTER-U
                         val intent = Intent(this, TextFileActivity::class.java)
                         intent.putExtra("file_path", item.file.absolutePath.toString())
                         startActivity(intent)
+                    }
+                    else{
+                        Toast.makeText(this, "Nije moguce otvoriti fajl!", Toast.LENGTH_LONG).show()
                     }
                 }
             }else{
@@ -81,7 +86,6 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this, "greska", Toast.LENGTH_SHORT).show()
                 }
             }
-
         }
 
         btnForward.setOnClickListener {
@@ -93,7 +97,6 @@ class MainActivity : AppCompatActivity() {
         btnCopy.setOnClickListener {
             adapter.printSelected();
         }
-
     }
 
     fun initDirectory() {
@@ -124,5 +127,4 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
 }

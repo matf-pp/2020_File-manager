@@ -10,8 +10,7 @@
         android:layout_height="66dp"
         android:layout_weight="0"
         android:contentDescription="@null"
-        android:visibility="visible"
-        app:srcCompat="@drawable/emptyfolder"/>
+        android:visibility="visible"/>
 
     <LinearLayout
         android:layout_width="253dp"
