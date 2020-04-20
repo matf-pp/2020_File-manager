@@ -11,4 +11,5 @@ class FileEntry (var file: File, var selected: Boolean){
         }
         return ret
     }
+
 }
