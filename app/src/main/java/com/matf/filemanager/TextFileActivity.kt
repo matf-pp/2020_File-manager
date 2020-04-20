@@ -10,15 +10,16 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.widget.doOnTextChanged
-import com.matf.filemanager.UtilClasses.JTextEditor
+
 import com.matf.filemanager.UtilClasses.SaveStatus
+import com.matf.filemanager.UtilClasses.TextEditor
 import java.io.File
 import java.lang.StringBuilder
 import kotlin.math.abs
 
 class TextFileActivity : AppCompatActivity() {
 
-    var textEditor: JTextEditor? = null;
+    var textEditor: TextEditor? = null;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,8 +34,8 @@ class TextFileActivity : AppCompatActivity() {
         val filePath = intent.getStringExtra("file_path")
         titletv.text = "EDITING FILE: " + filePath
 
-        textEditor = JTextEditor(filePath)
-        fileet.setText(textEditor!!.currentInstance)
+        textEditor = TextEditor(filePath)
+        fileet.setText(textEditor!!.getCurrentInstance())
 
         fileet.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
@@ -46,7 +47,7 @@ class TextFileActivity : AppCompatActivity() {
             }
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                val oldText: String = textEditor!!.currentInstance
+                val oldText: String = textEditor!!.getCurrentInstance()
                 val newText: String = p0.toString()
 
                 if(abs(newText.length - oldText.length) > 5){
@@ -59,21 +60,23 @@ class TextFileActivity : AppCompatActivity() {
         btnUndo.setOnClickListener {
 
             if(textEditor!!.goBack()){
-                fileet.setText(textEditor!!.currentInstance)
+                fileet.setText(textEditor!!.getCurrentInstance())
             }
         }
 
         btnRedo.setOnClickListener{
             if(textEditor!!.goForward()){
-                fileet.setText(textEditor!!.currentInstance)
+                fileet.setText(textEditor!!.getCurrentInstance())
             }
         }
 
         btnSave.setOnClickListener {
             val currText: String = fileet.text.toString()
-            if(textEditor!!.currentInstance != currText){
+            if(textEditor!!.getCurrentInstance() != currText){
                 textEditor!!.goTo(currText)
+
             }
+            Log.d("BTNSAVEONCLICK", "CURRENTINSTANCE: " + textEditor!!.getCurrentInstance())
             val ss: SaveStatus  = textEditor!!.saveChanges()
             Toast.makeText(this, ss.toString(), Toast.LENGTH_LONG).show()
         }
