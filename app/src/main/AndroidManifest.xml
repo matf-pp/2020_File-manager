@@ -3,6 +3,7 @@
     package="com.matf.filemanager">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:allowBackup="true"
@@ -16,6 +17,7 @@
             android:windowSoftInputMode="adjustResize">
         </activity>
         <activity android:name=".ImageFileActivity"/>
+        <activity android:name=".VideoFileActivity"/>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

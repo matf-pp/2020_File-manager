@@ -6,7 +6,6 @@ import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
-import android.util.Log
 import android.widget.Button
 import android.widget.ListView
 import android.widget.Toast
@@ -45,21 +44,20 @@ class MainActivity : AppCompatActivity() {
             if(!adapter.selectionMode){
                 val item: FileEntry = lista.getItemAtPosition(position) as FileEntry
                 if (!adapter.goTo(item)) {
-                    if(item.file.extension.matches(Regex("^(jpg|jpeg|png|JPG)$"))){
-                        val intent = Intent(this, ImageFileActivity::class.java)
-                        intent.putExtra("file_path", item.file.absolutePath.toString())
-                        startActivity(intent)
-                    }
-                    else if(item.file.extension.matches(Regex("^(mp4|mkv|webm)$"))){
-                        
-                    }
-                    else if(item.file.extension.matches(Regex("^(txt|html|css|js|c|h|cpp|hpp|py|java)$"))){
-                        //NISAM PREVISE SIGURAN DA OVO TREBA DA BUDE OVDE, MOZDA TREBA U FILEMANAGERADAPTER-U
+                    // TODO Pomeriti ovo u adapter.goTo
+                    if(item.file.extension.matches(Regex("^(txt|html|css|js|c|h|cpp|hpp|py|java)$"))) {
                         val intent = Intent(this, TextFileActivity::class.java)
                         intent.putExtra("file_path", item.file.absolutePath.toString())
                         startActivity(intent)
-                    }
-                    else{
+                    } else if(item.file.extension.matches(Regex("^(jpg|jpeg|png|JPG)$"))){
+                        val intent = Intent(this, ImageFileActivity::class.java)
+                        intent.putExtra("file_path", item.file.absolutePath.toString())
+                        startActivity(intent)
+                    } else if(item.file.extension.matches(Regex("^(mp4|mkv|webm)$"))) {
+                        val intent = Intent(this, VideoFileActivity::class.java)
+                        intent.putExtra("file_path", item.file.absolutePath.toString())
+                        startActivity(intent)
+                    } else{
                         Toast.makeText(this, "Nije moguce otvoriti fajl!", Toast.LENGTH_LONG).show()
                     }
                 }
