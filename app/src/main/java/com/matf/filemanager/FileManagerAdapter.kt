@@ -94,7 +94,7 @@ class FileManagerAdapter : BaseAdapter(), Versionable<FileEntry> {
 
     @SuppressLint("ViewHolder")
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        val view: View = this.mInflator!!.inflate(R.layout.listitem, parent, false)
+        val view: View = this.mInflator!!.inflate(R.layout.file_entry, parent, false)
         view.findViewById<TextView>(R.id.fileTitletv).text = currentSubdirectories[position].file.name
 
         val imageView: ImageView = view.findViewById<ImageView>(R.id.icon)

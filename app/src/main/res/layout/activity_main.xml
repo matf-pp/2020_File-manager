@@ -1,43 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-
-        <Button
-            android:id="@+id/backbtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:enabled="false"
-            android:text="@string/back" />
-
-        <Button
-            android:id="@+id/forwardbtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:enabled="false"
-            android:text="@string/forward" />
-        <Button
-            android:id="@+id/copybtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:enabled="false"
-            android:text="@string/copy"
-            />
-    </LinearLayout>
-
-
-    <ListView
-        android:id="@+id/mListView"
+        android:id="@+id/layoutTopMenu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="20dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_default="spread"
+        android:showDividers="middle"
+        android:divider="?android:dividerVertical"
+        android:dividerPadding="5dp">
+
+        <Button
+            android:id="@+id/bBack"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            android:text="@string/action_backward" />
+
+        <Button
+            android:id="@+id/bForward"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            android:text="@string/action_forward" />
+
+        <Button
+            android:id="@+id/bRefresh"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:enabled="true"
+            android:text="@string/action_refresh" />
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/lFileEntries"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         android:choiceMode="multipleChoice"
-        />
+        android:padding="10dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutTopMenu"
+        app:layout_constraintBottom_toTopOf="@id/layoutBottomMenu">
+    </ListView>
 
+    <LinearLayout
+        android:id="@+id/layoutBottomMenu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintWidth_default="spread"
+        android:showDividers="middle"
+        android:divider="?android:dividerVertical"
+        android:dividerPadding="5dp"
+        android:visibility="gone">
 
-</LinearLayout>
+        <Button
+            android:id="@+id/bCopy"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            android:text="@string/action_copy" />
+
+        <Button
+            android:id="@+id/bCut"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            android:text="@string/action_cut" />
+
+        <Button
+            android:id="@+id/bDelete"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            android:text="@string/action_delete" />
+
+        <Button
+            android:id="@+id/bPaste"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            android:text="@string/action_paste" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,7 +1,11 @@
 <resources>
     <string name="app_name">File Manager</string>
 
-    <string name="back">Back</string>
-    <string name="forward">Forward</string>
-    <string name="copy">Copy</string>
+    <string name="action_backward">Back</string>
+    <string name="action_forward">Forward</string>
+    <string name="action_refresh">Refresh</string>
+    <string name="action_copy">Copy</string>
+    <string name="action_cut">Cut</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_paste">Paste</string>
 </resources>

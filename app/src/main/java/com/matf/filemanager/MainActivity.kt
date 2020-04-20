@@ -20,11 +20,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val lista = findViewById<ListView>(R.id.mListView)
+        val lista = findViewById<ListView>(R.id.lFileEntries)
 
-        val btnBack = findViewById<Button>(R.id.backbtn)
-        val btnForward = findViewById<Button>(R.id.forwardbtn)
-        val btnCopy = findViewById<Button>(R.id.copybtn)
+        val btnBack = findViewById<Button>(R.id.bBack)
+        val btnForward = findViewById<Button>(R.id.bForward)
+
+        val btnCopy = findViewById<Button>(R.id.bCopy)
 
         val permission = ContextCompat.checkSelfPermission(
             this,
@@ -98,9 +99,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun initDirectory() {
-        val lista = findViewById<ListView>(R.id.mListView)
-        val btnBack = findViewById<Button>(R.id.backbtn)
-        val btnForward = findViewById<Button>(R.id.forwardbtn)
+        val lista = findViewById<ListView>(R.id.lFileEntries)
+        val btnBack = findViewById<Button>(R.id.bBack)
+        val btnForward = findViewById<Button>(R.id.bForward)
 
         adapter.init(FileEntry(Environment.getExternalStorageDirectory(), false), this)
         lista.adapter = adapter
