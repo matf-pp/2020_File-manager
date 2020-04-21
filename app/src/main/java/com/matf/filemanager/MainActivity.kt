@@ -1,12 +1,17 @@
 package com.matf.filemanager
 
 import android.Manifest
+import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
-import android.widget.*
+import android.os.Handler
+import android.widget.Button
+import android.widget.LinearLayout
+import android.widget.ListView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.matf.filemanager.launcher.ImageFileActivity
@@ -17,6 +22,7 @@ import com.matf.filemanager.manager.FileManager
 import com.matf.filemanager.util.ClipboardMode
 import com.matf.filemanager.util.FileManagerChangeListener
 import com.matf.filemanager.util.MenuMode
+import java.io.File
 
 class MainActivity : AppCompatActivity(), FileManagerChangeListener {
 
@@ -33,13 +39,14 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
     private lateinit var bPaste: Button
 
     private lateinit var adapter: FileEntryAdapter
+    private lateinit var copyReceiver: CopyReceiver
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         adapter = FileEntryAdapter(this)
-        FileManager.addEntryChangeListener(this)
+        FileManager.setListener(this)
 
         lFileEntries = findViewById(R.id.lFileEntries)
         lFileEntries.adapter = adapter
@@ -132,6 +139,17 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
         bPaste.setOnClickListener {
             FileManager.paste()
         }
+
+        copyReceiver = CopyReceiver(Handler())
+        copyReceiver.setReceiver(object: CopyReceiver.Receiver {
+            override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
+                if (resultCode == Activity.RESULT_OK) {
+                    val resultValue = resultData?.getString("resultValue")
+                    Toast.makeText(this@MainActivity, resultValue, Toast.LENGTH_SHORT).show()
+                    FileManager.refresh()
+                }
+            }
+        })
     }
 
     private fun initDirectory() {
@@ -192,6 +210,21 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
                 bPaste.isEnabled = false
             }
         }
+    }
+
+    override fun copyFile(src: File, dest: File) {
+        val i = Intent(this, CopyService::class.java)
+        if(src.isDirectory) {
+            println("copying dir")
+            i.putExtra("type", "dir")
+        } else {
+            println("copying file")
+            i.putExtra("type", "file")
+        }
+        i.putExtra("src", src.absolutePath)
+        i.putExtra("dest", dest.absolutePath)
+        i.putExtra("receiver", copyReceiver)
+        startService(i)
     }
 
     // TODO OnBack call FileManager.onBack instead of exiting

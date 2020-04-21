@@ -18,7 +18,7 @@ object FileManager {
     var clipboardMode: ClipboardMode = ClipboardMode.NONE
     private var clipboard: ArrayList<File> = ArrayList()
 
-    private var listeners: ArrayList<FileManagerChangeListener> = ArrayList()
+    private var listener: FileManagerChangeListener? = null
 
     fun goTo(newElement: FileEntry): Boolean {
         if(newElement.file.isDirectory) {
@@ -118,8 +118,11 @@ object FileManager {
                     break;
                 }
             }
-            new_name += "." + f.extension
-            f.copyTo(currentDirectory?.resolve(new_name) as File, false)
+
+            if(!f.isDirectory)
+                new_name += "." + f.extension
+            listener?.copyFile(f, currentDirectory?.resolve(new_name) as File)
+
         }
         refresh()
     }
@@ -139,23 +142,20 @@ object FileManager {
         }
     }
 
-    fun addEntryChangeListener(listener: FileManagerChangeListener) {
-        listeners.add(listener)
+    fun setListener(listener: FileManagerChangeListener) {
+        this.listener = listener
     }
 
     private fun notifyEntryChanged() {
-        for(listener in listeners)
-            listener.onEntriesChange()
+        listener?.onEntriesChange()
     }
 
     private fun notifySelectionModeChanged() {
-        for(listener in listeners)
-            listener.onSelectionModeChange(menuMode)
+        listener?.onSelectionModeChange(menuMode)
     }
 
     private fun notifyClipboardChanged() {
-        for(listener in listeners)
-            listener.onClipboardChange(clipboardMode)
+        listener?.onClipboardChange(clipboardMode)
     }
 
     // TODO canGoBack/Forward za enable dugmica
