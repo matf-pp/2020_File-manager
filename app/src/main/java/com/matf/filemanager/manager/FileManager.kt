@@ -109,15 +109,16 @@ object FileManager {
                 continue
                 //TODO Nalazimo se unutar fajla koji kopiramo
             }
-            var new_name = f.name
+            var new_name = f.nameWithoutExtension
             //TODO Limit this by hardcoded value
             while(true) {
-                if(currentDirectory?.resolve(new_name)?.exists() == true) {
+                if(currentDirectory?.resolve(new_name+"."+f.extension)?.exists() == true) {
                     new_name += "-copy"
                 } else {
                     break;
                 }
             }
+            new_name += "." + f.extension
             f.copyTo(currentDirectory?.resolve(new_name) as File, false)
         }
         refresh()

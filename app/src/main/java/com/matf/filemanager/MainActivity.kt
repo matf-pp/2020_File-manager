@@ -171,7 +171,8 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
     override fun onSelectionModeChange(mode: MenuMode) {
         when(mode) {
             MenuMode.OPEN -> {
-                layoutBottomMenu.visibility = LinearLayout.GONE
+                if(FileManager.clipboardMode == ClipboardMode.NONE)
+                    layoutBottomMenu.visibility = LinearLayout.GONE
             }
             MenuMode.SELECT -> {
                 layoutBottomMenu.visibility = LinearLayout.VISIBLE
