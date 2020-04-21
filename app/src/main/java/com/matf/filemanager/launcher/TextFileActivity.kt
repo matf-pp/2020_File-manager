@@ -1,4 +1,4 @@
-package com.matf.filemanager
+package com.matf.filemanager.launcher
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -9,12 +9,10 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
-import androidx.core.widget.doOnTextChanged
+import com.matf.filemanager.R
 
-import com.matf.filemanager.UtilClasses.SaveStatus
-import com.matf.filemanager.UtilClasses.TextEditor
-import java.io.File
-import java.lang.StringBuilder
+import com.matf.filemanager.util.SaveStatus
+import com.matf.filemanager.util.TextEditor
 import kotlin.math.abs
 
 class TextFileActivity : AppCompatActivity() {
@@ -77,7 +75,7 @@ class TextFileActivity : AppCompatActivity() {
 
             }
             Log.d("BTNSAVEONCLICK", "CURRENTINSTANCE: " + textEditor!!.getCurrentInstance())
-            val ss: SaveStatus  = textEditor!!.saveChanges()
+            val ss: SaveStatus = textEditor!!.saveChanges()
             Toast.makeText(this, ss.toString(), Toast.LENGTH_LONG).show()
         }
 

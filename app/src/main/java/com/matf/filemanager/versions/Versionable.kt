@@ -1,4 +1,4 @@
-package com.matf.filemanager.Versions
+package com.matf.filemanager.versions
 
 interface Versionable<T> {
     fun getCurrentInstance(): T?

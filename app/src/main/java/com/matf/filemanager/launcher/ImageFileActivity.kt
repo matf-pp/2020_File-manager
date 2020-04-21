@@ -1,4 +1,4 @@
-package com.matf.filemanager
+package com.matf.filemanager.launcher
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ImageView
 import android.widget.TextView
+import com.matf.filemanager.R
 import java.io.File
 
 class ImageFileActivity : AppCompatActivity() {

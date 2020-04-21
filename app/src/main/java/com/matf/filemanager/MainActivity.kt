@@ -9,11 +9,27 @@ import android.os.Environment
 import android.widget.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.matf.filemanager.launcher.ImageFileActivity
+import com.matf.filemanager.launcher.TextFileActivity
+import com.matf.filemanager.launcher.VideoFileActivity
+import com.matf.filemanager.manager.FileEntry
 import com.matf.filemanager.manager.FileManager
 import com.matf.filemanager.util.FileManagerChangeListener
 import com.matf.filemanager.util.MenuMode
 
 class MainActivity : AppCompatActivity(), FileManagerChangeListener {
+
+    private lateinit var lFileEntries: ListView
+
+    private lateinit var bBack: Button
+    private lateinit var bForward: Button
+    private lateinit var bRefresh: Button
+
+    private lateinit var layoutBottomMenu: LinearLayout
+    private lateinit var bCopy: Button
+    private lateinit var bCut: Button
+    private lateinit var bDelete: Button
+    private lateinit var bPaste: Button
 
     private lateinit var adapter: FileEntryAdapter
 
@@ -24,14 +40,17 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
         adapter = FileEntryAdapter(this)
         FileManager.addEntryChangeListner(this)
 
-        val lista = findViewById<ListView>(R.id.lFileEntries)
-        lista.adapter = adapter
+        lFileEntries = findViewById(R.id.lFileEntries)
+        lFileEntries.adapter = adapter
 
-        val btnBack = findViewById<Button>(R.id.bBack)
-        val btnForward = findViewById<Button>(R.id.bForward)
+        bBack = findViewById(R.id.bBack)
+        bForward = findViewById(R.id.bForward)
+        bRefresh = findViewById(R.id.bRefresh)
 
-        val btnCopy = findViewById<Button>(R.id.bCopy)
-        val btnRefresh = findViewById<Button>(R.id.bRefresh)
+        bCopy = findViewById(R.id.bCopy)
+        bCut = findViewById(R.id.bCut)
+        bDelete = findViewById(R.id.bDelete)
+        bPaste = findViewById(R.id.bPaste)
 
         val permission = ContextCompat.checkSelfPermission(
             this,
@@ -47,9 +66,9 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
             )
         }
 
-        lista.setOnItemClickListener { _, _, position, _ ->
+        lFileEntries.setOnItemClickListener { _, _, position, _ ->
             if(FileManager.menuMode == MenuMode.OPEN){
-                val item: FileEntry = lista.getItemAtPosition(position) as FileEntry
+                val item: FileEntry = lFileEntries.getItemAtPosition(position) as FileEntry
                 if (!FileManager.goTo(item)) {
                     // TODO Pomeriti ovo u adapter.goTo
                     if(item.file.extension.matches(Regex("^(txt|html|css|js|c|h|cpp|hpp|py|java)$"))) {
@@ -73,7 +92,7 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
             }
         }
 
-        lista.setOnItemLongClickListener { adapterView, view, position, l ->
+        lFileEntries.setOnItemLongClickListener { adapterView, view, position, l ->
             if(FileManager.menuMode == MenuMode.OPEN) {
                 FileManager.toggleSelectionMode()
                 FileManager.toggleSelectionAt(position)
@@ -81,7 +100,7 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
             true
         }
 
-        btnBack.setOnClickListener {
+        bBack.setOnClickListener {
             when(FileManager.menuMode) {
                 MenuMode.OPEN -> {
                     if (!FileManager.goBack()) {
@@ -94,25 +113,27 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
             }
         }
 
-        btnForward.setOnClickListener {
+        bForward.setOnClickListener {
             if (!FileManager.goForward()) {
                 Toast.makeText(this, "greska", Toast.LENGTH_SHORT).show()
             }
         }
 
-        btnRefresh.setOnClickListener {
+        bRefresh.setOnClickListener {
             FileManager.refresh()
         }
     }
 
-    fun initDirectory() {
-        val btnBack = findViewById<Button>(R.id.bBack)
-        val btnForward = findViewById<Button>(R.id.bForward)
+    private fun initDirectory() {
+        FileManager.goTo(
+            FileEntry(
+                Environment.getExternalStorageDirectory(),
+                false
+            )
+        )
 
-        FileManager.goTo(FileEntry(Environment.getExternalStorageDirectory(), false))
-
-        btnBack.isEnabled = true
-        btnForward.isEnabled = true
+        bBack.isEnabled = true
+        bForward.isEnabled = true
     }
 
     override fun onRequestPermissionsResult(
@@ -134,17 +155,19 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
 
     override fun onEntriesChange() {
         adapter.notifyDataSetChanged()
+        // TODO Ukljuciti i iskljuciti back i forward dugmice
     }
 
     override fun onSelectionModeChange(mode: MenuMode) {
-        val bottomMenu = findViewById<LinearLayout>(R.id.layoutBottomMenu)
         when(mode) {
             MenuMode.OPEN -> {
-                bottomMenu.visibility = LinearLayout.GONE
+                layoutBottomMenu.visibility = LinearLayout.GONE
             }
             MenuMode.SELECT -> {
-                bottomMenu.visibility = LinearLayout.VISIBLE
+                layoutBottomMenu.visibility = LinearLayout.VISIBLE
             }
         }
     }
+
+    // TODO OnBack call FileManager.onBack instead of exiting
 }

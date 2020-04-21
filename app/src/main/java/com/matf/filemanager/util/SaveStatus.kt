@@ -1,4 +1,4 @@
-package com.matf.filemanager.UtilClasses
+package com.matf.filemanager.util
 
 enum class SaveStatus {
     FILESAVED, ERRORSAVING, FILENOTCHANGED;

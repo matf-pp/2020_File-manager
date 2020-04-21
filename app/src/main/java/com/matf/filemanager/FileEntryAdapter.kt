@@ -40,6 +40,8 @@ class FileEntryAdapter(context: Context) : BaseAdapter() {
 
         if (FileManager.entries[position].selected) {
             view.setBackgroundColor(Color.DKGRAY)
+        } else {
+            view.setBackgroundColor(Color.TRANSPARENT)
         }
         return view
     }

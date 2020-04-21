@@ -13,11 +13,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".TextFileActivity"
+            android:name=".launcher.TextFileActivity"
             android:windowSoftInputMode="adjustResize">
         </activity>
-        <activity android:name=".ImageFileActivity"/>
-        <activity android:name=".VideoFileActivity"/>
+        <activity android:name=".launcher.ImageFileActivity"/>
+        <activity android:name=".launcher.VideoFileActivity"/>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

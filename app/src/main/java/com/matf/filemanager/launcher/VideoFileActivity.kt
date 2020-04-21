@@ -1,4 +1,4 @@
-package com.matf.filemanager
+package com.matf.filemanager.launcher
 
 import android.content.pm.ActivityInfo
 import android.os.Bundle
@@ -8,6 +8,7 @@ import android.widget.MediaController
 import android.widget.Toast
 import android.widget.VideoView
 import androidx.appcompat.app.AppCompatActivity
+import com.matf.filemanager.R
 import kotlinx.android.synthetic.main.activity_video_file.*
 
 class VideoFileActivity : AppCompatActivity() {

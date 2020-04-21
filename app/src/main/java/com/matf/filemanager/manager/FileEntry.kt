@@ -1,4 +1,4 @@
-package com.matf.filemanager
+package com.matf.filemanager.manager
 
 import java.io.File
 

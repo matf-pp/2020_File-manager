@@ -1,8 +1,7 @@
 package com.matf.filemanager.manager
 
 import android.util.Log
-import com.matf.filemanager.FileEntry
-import com.matf.filemanager.Versions.StateSaver
+import com.matf.filemanager.versions.StateSaver
 import com.matf.filemanager.util.FileManagerChangeListener
 import com.matf.filemanager.util.MenuMode
 
@@ -25,6 +24,7 @@ object FileManager {
             }
         } else {
             Log.d("TODO", "OPEN THIS FILE")
+            // TODO Pozvati onRequestFileOpen
             return false
         }
     }
@@ -87,5 +87,7 @@ object FileManager {
         for(listener in listeners)
             listener.onSelectionModeChange(menuMode)
     }
+
+    // TODO canGoBack/Forward za enable dugmica
 
 }
