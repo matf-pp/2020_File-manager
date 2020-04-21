@@ -14,6 +14,7 @@ import com.matf.filemanager.launcher.TextFileActivity
 import com.matf.filemanager.launcher.VideoFileActivity
 import com.matf.filemanager.manager.FileEntry
 import com.matf.filemanager.manager.FileManager
+import com.matf.filemanager.util.ClipboardMode
 import com.matf.filemanager.util.FileManagerChangeListener
 import com.matf.filemanager.util.MenuMode
 
@@ -38,7 +39,7 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
         setContentView(R.layout.activity_main)
 
         adapter = FileEntryAdapter(this)
-        FileManager.addEntryChangeListner(this)
+        FileManager.addEntryChangeListener(this)
 
         lFileEntries = findViewById(R.id.lFileEntries)
         lFileEntries.adapter = adapter
@@ -47,6 +48,7 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
         bForward = findViewById(R.id.bForward)
         bRefresh = findViewById(R.id.bRefresh)
 
+        layoutBottomMenu = findViewById(R.id.layoutBottomMenu)
         bCopy = findViewById(R.id.bCopy)
         bCut = findViewById(R.id.bCut)
         bDelete = findViewById(R.id.bDelete)
@@ -122,6 +124,14 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
         bRefresh.setOnClickListener {
             FileManager.refresh()
         }
+
+        bCopy.setOnClickListener {
+            FileManager.moveSelectedToClipboard(ClipboardMode.COPY)
+        }
+
+        bPaste.setOnClickListener {
+            FileManager.paste()
+        }
     }
 
     private fun initDirectory() {
@@ -165,6 +175,20 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
             }
             MenuMode.SELECT -> {
                 layoutBottomMenu.visibility = LinearLayout.VISIBLE
+                bCopy.isEnabled = true
+                bCut.isEnabled = true
+                bDelete.isEnabled = true
+            }
+        }
+    }
+
+    override fun onClipboardChange(mode: ClipboardMode) {
+        when(mode) {
+            ClipboardMode.COPY, ClipboardMode.CUT -> {
+                bPaste.isEnabled = true
+            }
+            else -> {
+                bPaste.isEnabled = false
             }
         }
     }

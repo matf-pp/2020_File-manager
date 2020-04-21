@@ -1,21 +1,30 @@
 package com.matf.filemanager.manager
 
 import android.util.Log
+import com.matf.filemanager.util.ClipboardMode
 import com.matf.filemanager.versions.StateSaver
 import com.matf.filemanager.util.FileManagerChangeListener
 import com.matf.filemanager.util.MenuMode
+import java.io.File
 
 object FileManager {
 
     private var stateSaver: StateSaver<FileEntry> = StateSaver()
+
+    var currentDirectory: File? = null
     var entries: ArrayList<FileEntry> = ArrayList()
+
     var menuMode: MenuMode = MenuMode.OPEN
+    var clipboardMode: ClipboardMode = ClipboardMode.NONE
+    private var clipboard: ArrayList<File> = ArrayList()
 
     private var listeners: ArrayList<FileManagerChangeListener> = ArrayList()
 
     fun goTo(newElement: FileEntry): Boolean {
         if(newElement.file.isDirectory) {
             if(stateSaver.goTo(newElement)) {
+                // TODO isto ovo u go back i forward
+                currentDirectory = newElement.file
                 refresh()
                 return true
             } else {
@@ -31,7 +40,7 @@ object FileManager {
 
     fun goBack(): Boolean {
         if(stateSaver.goBack()) {
-            refresh();
+            refresh()
             return true
         }
         return false
@@ -39,7 +48,7 @@ object FileManager {
 
     fun goForward(): Boolean {
         if(stateSaver.goForward()) {
-            refresh();
+            refresh()
             return true
         }
         return false
@@ -74,7 +83,62 @@ object FileManager {
         notifyEntryChanged()
     }
 
-    fun addEntryChangeListner(listener: FileManagerChangeListener) {
+    fun moveSelectedToClipboard(mode: ClipboardMode) {
+        clipboardMode = mode
+        when(menuMode){
+            MenuMode.SELECT -> {
+                clipboard.clear()
+                // Malo funkcionalnog programiranja :)
+                clipboard.addAll(entries.filter { e -> e.selected }.map { e -> e.file })
+                println("moved to clipboard")
+            }
+            MenuMode.OPEN -> {
+                // TODO Nismo u modu za selekciju, ili ocistiti clipboard ili ne raditi nista
+            }
+
+        }
+        notifyClipboardChanged()
+    }
+
+    fun copy() {
+        println("copying files")
+//        if(currentDirectory==null)
+//            return
+        for(f in clipboard) {
+            if(currentDirectory?.startsWith(f) == true){
+                continue
+                //TODO Nalazimo se unutar fajla koji kopiramo
+            }
+            var new_name = f.name
+            //TODO Limit this by hardcoded value
+            while(true) {
+                if(currentDirectory?.resolve(new_name)?.exists() == true) {
+                    new_name += "-copy"
+                } else {
+                    break;
+                }
+            }
+            f.copyTo(currentDirectory?.resolve(new_name) as File, false)
+        }
+        refresh()
+    }
+
+    fun paste() {
+        when(clipboardMode) {
+            ClipboardMode.NONE -> {
+                //TODO Error shouldn be able to press button
+            }
+            ClipboardMode.COPY -> {
+                copy()
+                //TODO Clear clipboard
+                clipboard.clear()
+                clipboardMode = ClipboardMode.NONE
+                notifyClipboardChanged()
+            }
+        }
+    }
+
+    fun addEntryChangeListener(listener: FileManagerChangeListener) {
         listeners.add(listener)
     }
 
@@ -86,6 +150,11 @@ object FileManager {
     private fun notifySelectionModeChanged() {
         for(listener in listeners)
             listener.onSelectionModeChange(menuMode)
+    }
+
+    private fun notifyClipboardChanged() {
+        for(listener in listeners)
+            listener.onClipboardChange(clipboardMode)
     }
 
     // TODO canGoBack/Forward za enable dugmica
