@@ -6,26 +6,32 @@ import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
-import android.widget.Button
-import android.widget.ListView
-import android.widget.Toast
+import android.widget.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.matf.filemanager.manager.FileManager
+import com.matf.filemanager.util.FileManagerChangeListener
+import com.matf.filemanager.util.MenuMode
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), FileManagerChangeListener {
 
-    private val adapter: FileManagerAdapter = FileManagerAdapter()
+    private lateinit var adapter: FileEntryAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        adapter = FileEntryAdapter(this)
+        FileManager.addEntryChangeListner(this)
+
         val lista = findViewById<ListView>(R.id.lFileEntries)
+        lista.adapter = adapter
 
         val btnBack = findViewById<Button>(R.id.bBack)
         val btnForward = findViewById<Button>(R.id.bForward)
 
         val btnCopy = findViewById<Button>(R.id.bCopy)
+        val btnRefresh = findViewById<Button>(R.id.bRefresh)
 
         val permission = ContextCompat.checkSelfPermission(
             this,
@@ -42,9 +48,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         lista.setOnItemClickListener { _, _, position, _ ->
-            if(!adapter.selectionMode){
+            if(FileManager.menuMode == MenuMode.OPEN){
                 val item: FileEntry = lista.getItemAtPosition(position) as FileEntry
-                if (!adapter.goTo(item)) {
+                if (!FileManager.goTo(item)) {
                     // TODO Pomeriti ovo u adapter.goTo
                     if(item.file.extension.matches(Regex("^(txt|html|css|js|c|h|cpp|hpp|py|java)$"))) {
                         val intent = Intent(this, TextFileActivity::class.java)
@@ -63,48 +69,47 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }else{
-                adapter.toggleSelectionAt(position)
+                FileManager.toggleSelectionAt(position)
             }
         }
 
         lista.setOnItemLongClickListener { adapterView, view, position, l ->
-
-            if(!adapter.selectionMode){
-
-                adapter.toggleSelectionMode()
-                adapter.toggleSelectionAt(position)
+            if(FileManager.menuMode == MenuMode.OPEN) {
+                FileManager.toggleSelectionMode()
+                FileManager.toggleSelectionAt(position)
             }
             true
         }
 
         btnBack.setOnClickListener {
-            if(adapter.selectionMode) {
-                adapter.toggleSelectionMode()
-            }else{
-                if (!adapter.goBack()) {
-                    Toast.makeText(this, "greska", Toast.LENGTH_SHORT).show()
+            when(FileManager.menuMode) {
+                MenuMode.OPEN -> {
+                    if (!FileManager.goBack()) {
+                        Toast.makeText(this, "greska", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                MenuMode.SELECT -> {
+                    FileManager.toggleSelectionMode()
                 }
             }
         }
 
         btnForward.setOnClickListener {
-            if (!adapter.goForward()) {
+            if (!FileManager.goForward()) {
                 Toast.makeText(this, "greska", Toast.LENGTH_SHORT).show()
             }
         }
 
-        btnCopy.setOnClickListener {
-            adapter.printSelected();
+        btnRefresh.setOnClickListener {
+            FileManager.refresh()
         }
     }
 
     fun initDirectory() {
-        val lista = findViewById<ListView>(R.id.lFileEntries)
         val btnBack = findViewById<Button>(R.id.bBack)
         val btnForward = findViewById<Button>(R.id.bForward)
 
-        adapter.init(FileEntry(Environment.getExternalStorageDirectory(), false), this)
-        lista.adapter = adapter
+        FileManager.goTo(FileEntry(Environment.getExternalStorageDirectory(), false))
 
         btnBack.isEnabled = true
         btnForward.isEnabled = true
@@ -123,6 +128,22 @@ class MainActivity : AppCompatActivity() {
                     this,
                     arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 0
                 )
+            }
+        }
+    }
+
+    override fun onEntriesChange() {
+        adapter.notifyDataSetChanged()
+    }
+
+    override fun onSelectionModeChange(mode: MenuMode) {
+        val bottomMenu = findViewById<LinearLayout>(R.id.layoutBottomMenu)
+        when(mode) {
+            MenuMode.OPEN -> {
+                bottomMenu.visibility = LinearLayout.GONE
+            }
+            MenuMode.SELECT -> {
+                bottomMenu.visibility = LinearLayout.VISIBLE
             }
         }
     }

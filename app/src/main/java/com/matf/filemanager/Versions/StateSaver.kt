@@ -4,12 +4,9 @@ open class StateSaver<T> : Versionable<T>{
     private var history: ArrayList<T> = ArrayList()
     private var currentInstanceIndex = -1
 
-    constructor(initialElement: T){
-        history.add(initialElement)
-        currentInstanceIndex = 0
-    }
-
-    override fun getCurrentInstance(): T {
+    override fun getCurrentInstance(): T? {
+        if(currentInstanceIndex == -1)
+            return null
         return history[currentInstanceIndex]
     }
 

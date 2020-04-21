@@ -47,7 +47,7 @@ class TextFileActivity : AppCompatActivity() {
             }
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                val oldText: String = textEditor!!.getCurrentInstance()
+                val oldText: String = textEditor!!.getCurrentInstance().orEmpty()
                 val newText: String = p0.toString()
 
                 if(abs(newText.length - oldText.length) > 5){

@@ -9,14 +9,13 @@ class TextEditor : StateSaver<String> {
     private var upToDate: Boolean = false
     private var filepath: String = ""
 
-    constructor(filepath: String) : super("") {
+    constructor(filepath: String) : super() {
         Log.d("INSIDE", "CONSTRUCTOR")
         upToDate = false
         this.filepath = filepath
 
         refreshFile()
     }
-
 
     private fun closeReader(reader: BufferedReader) {
         try {
