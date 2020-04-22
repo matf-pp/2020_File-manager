@@ -19,23 +19,51 @@ class FileActionService : JobIntentService() {
     }
 
     override fun onHandleWork(intent: Intent) {
-        println("service working")
         val rec: ResultReceiver = intent.getParcelableExtra("receiver")
-
         val action = intent.getSerializableExtra("action")
 
         when(action) {
             FileActions.COPY -> {
-                val type = intent.getStringExtra("type")
-                val src = File(intent.getStringExtra("src"))
+                val targets = intent.getStringArrayExtra("targets").map { t -> File(t) }
                 val dest = File(intent.getStringExtra("dest"))
 
-                when(type) {
-                    "dir" -> {
-                        src.copyRecursively(dest, false)
+                targets.forEach { target ->
+                    var new_name = target.nameWithoutExtension
+                    //TODO Limit this by hardcoded value
+                    while(true) {
+                        if(dest.resolve(new_name+"."+target.extension).exists()) {
+                            new_name += "-copy"
+                        } else {
+                            break;
+                        }
                     }
-                    "file" -> {
-                        src.copyTo(dest, false)
+
+                    if(target.isDirectory) {
+                        target.copyRecursively(dest.resolve(new_name), false)
+                    } else {
+                        new_name += "." + target.extension
+                        target.copyTo(dest.resolve(new_name), false)
+                    }
+                }
+            }
+            FileActions.MOVE -> {
+                val targets = intent.getStringArrayExtra("targets").map { t -> File(t) }
+                val dest = File(intent.getStringExtra("dest"))
+
+                targets.forEach { target ->
+                    if(!dest.resolve(target.name).exists())
+                        target.renameTo(dest.resolve(target.name))
+                }
+            }
+            FileActions.DELETE -> {
+                val targets = intent.getStringArrayExtra("targets").map { t -> File(t) }
+                targets.forEach { target ->
+                    if (target.exists()) {
+                        if (target.isDirectory) {
+                            target.deleteRecursively()
+                        } else {
+                            target.delete()
+                        }
                     }
                 }
             }

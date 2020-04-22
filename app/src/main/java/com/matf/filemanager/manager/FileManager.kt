@@ -109,25 +109,25 @@ object FileManager {
     }
 
     private fun copy() {
-        for(f in clipboard) {
-            if(currentDirectory?.startsWith(f) == true){
-                continue
-                //TODO Nalazimo se unutar fajla koji kopiramo
-            }
-            var new_name = f.nameWithoutExtension
-            //TODO Limit this by hardcoded value
-            while(true) {
-                if(currentDirectory?.resolve(new_name+"."+f.extension)?.exists() == true) {
-                    new_name += "-copy"
-                } else {
-                    break;
-                }
-            }
+        listener?.copyFile(
+            clipboard.filter { f -> currentDirectory?.startsWith(f) == false },
+            currentDirectory as File
+        )
+    }
 
-            if(!f.isDirectory)
-                new_name += "." + f.extension
-            listener?.copyFile(f, currentDirectory?.resolve(new_name) as File)
-        }
+    private fun cut() {
+        listener?.moveFile(
+            clipboard
+                .filter { f -> currentDirectory?.startsWith(f) == false }
+                .filter { f -> currentDirectory?.resolve(f.name)?.exists() == false },
+            currentDirectory as File
+        )
+    }
+
+    fun delete() {
+        listener?.deleteFile(
+            entries.filter { e -> e.selected && e.file.exists() }.map {e -> e.file}
+        )
     }
 
     fun paste() {
@@ -137,6 +137,13 @@ object FileManager {
             }
             ClipboardMode.COPY -> {
                 copy()
+
+                clipboard.clear()
+                clipboardMode = ClipboardMode.NONE
+                notifyClipboardChanged()
+            }
+            ClipboardMode.CUT -> {
+                cut()
 
                 clipboard.clear()
                 clipboardMode = ClipboardMode.NONE

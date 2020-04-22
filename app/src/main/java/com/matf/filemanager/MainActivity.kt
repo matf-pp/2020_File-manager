@@ -2,6 +2,7 @@ package com.matf.filemanager
 
 import android.Manifest
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -26,6 +27,7 @@ import com.matf.filemanager.util.FileActions
 import com.matf.filemanager.util.FileManagerChangeListener
 import com.matf.filemanager.util.MenuMode
 import java.io.File
+
 
 class MainActivity : AppCompatActivity(), FileManagerChangeListener {
 
@@ -122,6 +124,14 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
 
         bCopy.setOnClickListener {
             FileManager.moveSelectedToClipboard(ClipboardMode.COPY)
+        }
+
+        bCut.setOnClickListener {
+            FileManager.moveSelectedToClipboard(ClipboardMode.CUT)
+        }
+
+        bDelete.setOnClickListener {
+            FileManager.delete()
         }
 
         bPaste.setOnClickListener {
@@ -229,20 +239,44 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
         return false
     }
 
-    override fun copyFile(src: File, dest: File) {
+    override fun copyFile(targets: List<File>, dest: File) {
         val i = Intent(this, FileActionService::class.java)
 
         i.putExtra("action", FileActions.COPY)
-        if(src.isDirectory) {
-            i.putExtra("type", "dir")
-        } else {
-            i.putExtra("type", "file")
-        }
-        i.putExtra("src", src.absolutePath)
+        i.putExtra("targets", targets.map { f -> f.absolutePath }.toTypedArray())
         i.putExtra("dest", dest.absolutePath)
         i.putExtra("receiver", fileActionReceiver)
 
         FileActionService.enqueueWork(this, i)
+    }
+
+    override fun moveFile(targets: List<File>, dest: File) {
+        val i = Intent(this, FileActionService::class.java)
+
+        i.putExtra("action", FileActions.MOVE)
+        i.putExtra("targets", targets.map { f -> f.absolutePath }.toTypedArray())
+        i.putExtra("dest", dest.absolutePath)
+        i.putExtra("receiver", fileActionReceiver)
+
+        FileActionService.enqueueWork(this, i)
+    }
+
+    override fun deleteFile(targets: List<File>) {
+        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+        builder.setTitle("Confirm")
+        builder.setMessage("Are you sure you want to delete selected files?")
+        builder.setCancelable(false)
+        builder.setPositiveButton("Yes") { dialog, which ->
+            val i = Intent(this, FileActionService::class.java)
+            i.putExtra("action", FileActions.DELETE)
+            i.putExtra("targets", targets.map { f -> f.absolutePath }.toTypedArray())
+            i.putExtra("receiver", fileActionReceiver)
+
+            FileActionService.enqueueWork(this, i)
+        }
+        builder.setNegativeButton("No") { _, _ -> }
+
+        builder.show()
     }
 
     // TODO OnBack call FileManager.onBack instead of exiting
