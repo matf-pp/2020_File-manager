@@ -8,10 +8,10 @@ import java.io.File
 
 object FileManager {
 
-    private var stateSaver: StateSaver<FileEntry> = StateSaver()
+    private var history: StateSaver<FileEntry> = StateSaver()
 
-    var currentDirectory: File? = null
-        private set
+    val currentDirectory: File?
+        get() = history.getCurrentInstance()?.file
     var entries: ArrayList<FileEntry> = ArrayList()
         private set
 
@@ -24,25 +24,21 @@ object FileManager {
 
     private var listener: FileManagerChangeListener? = null
 
-    fun goTo(newElement: FileEntry): Boolean {
-        if(newElement.file.isDirectory) {
-            if(stateSaver.goTo(newElement)) {
-                // TODO isto ovo u go back i forward
-                currentDirectory = newElement.file
-                refresh()
-                return true
-            } else {
-                //OVO NE BI TREBALO DA MOZE DA SE DESI UOPSTE
-                return false
-            }
-        } else {
-            // TODO Pozvati onRequestFileOpen
+    fun goTo(entry: FileEntry): Boolean {
+        if(!entry.file.exists())
             return false
+
+        if(entry.file.isDirectory) {
+            history.goTo(entry)
+            refresh()
+        } else {
+            return requestFileOpen(entry.file)
         }
+        return true
     }
 
     fun goBack(): Boolean {
-        if(stateSaver.goBack()) {
+        if(history.goBack()) {
             refresh()
             return true
         }
@@ -50,21 +46,21 @@ object FileManager {
     }
 
     fun goForward(): Boolean {
-        if(stateSaver.goForward()) {
+        if(history.goForward()) {
             refresh()
             return true
         }
         return false
     }
 
-    fun canGoBack() : Boolean = stateSaver.canGoBack()
+    fun canGoBack() : Boolean = history.canGoBack()
 
-    fun canGoForward() : Boolean = stateSaver.canGoForward()
+    fun canGoForward() : Boolean = history.canGoForward()
 
     fun refresh() {
         // TODO Don't mutate entries in stateSaver
         entries.clear()
-        entries.addAll(stateSaver.getCurrentInstance()?.listFileEntries().orEmpty())
+        entries.addAll(history.getCurrentInstance()?.listFileEntries().orEmpty())
 
         if(menuMode == MenuMode.SELECT) toggleSelectionMode()
         notifyEntriesChanged()
@@ -163,6 +159,10 @@ object FileManager {
 
     private fun notifyClipboardChanged() {
         listener?.onClipboardChange(clipboardMode)
+    }
+
+    private fun requestFileOpen(file: File): Boolean {
+        return listener?.onRequestFileOpen(file)==true
     }
 
 }

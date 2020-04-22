@@ -82,22 +82,7 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
             if(FileManager.menuMode == MenuMode.OPEN){
                 val item: FileEntry = lFileEntries.getItemAtPosition(position) as FileEntry
                 if (!FileManager.goTo(item)) {
-                    // TODO Pomeriti ovo u onRequestFileOpen
-                    if(item.file.extension.matches(Regex("^(txt|html|css|js|c|h|cpp|hpp|py|java)$"))) {
-                        val intent = Intent(this, TextFileActivity::class.java)
-                        intent.putExtra("file_path", item.file.absolutePath.toString())
-                        startActivity(intent)
-                    } else if(item.file.extension.matches(Regex("^(jpg|jpeg|png|JPG)$"))){
-                        val intent = Intent(this, ImageFileActivity::class.java)
-                        intent.putExtra("file_path", item.file.absolutePath.toString())
-                        startActivity(intent)
-                    } else if(item.file.extension.matches(Regex("^(mp4|mkv|webm)$"))) {
-                        val intent = Intent(this, VideoFileActivity::class.java)
-                        intent.putExtra("file_path", item.file.absolutePath.toString())
-                        startActivity(intent)
-                    } else{
-                        Toast.makeText(this, "Nije moguce otvoriti fajl!", Toast.LENGTH_LONG).show()
-                    }
+                    Toast.makeText(this, "Nije moguce otvoriti!", Toast.LENGTH_LONG).show()
                 }
             }else{
                 FileManager.toggleSelectionAt(position)
@@ -222,6 +207,26 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
                 bPaste.isEnabled = false
             }
         }
+    }
+
+    override fun onRequestFileOpen(file: File): Boolean {
+        if(file.extension.matches(Regex("^(txt|html|css|js|c|h|cpp|hpp|py|java)$"))) {
+            val intent = Intent(this, TextFileActivity::class.java)
+            intent.putExtra("file_path", file.absolutePath.toString())
+            startActivity(intent)
+            return true
+        } else if(file.extension.matches(Regex("^(jpg|jpeg|png|JPG)$"))){
+            val intent = Intent(this, ImageFileActivity::class.java)
+            intent.putExtra("file_path", file.absolutePath.toString())
+            startActivity(intent)
+            return true
+        } else if(file.extension.matches(Regex("^(mp4|mkv|webm)$"))) {
+            val intent = Intent(this, VideoFileActivity::class.java)
+            intent.putExtra("file_path", file.absolutePath.toString())
+            startActivity(intent)
+            return true
+        }
+        return false
     }
 
     override fun copyFile(src: File, dest: File) {
