@@ -183,7 +183,8 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
 
     override fun onEntriesChange() {
         adapter.notifyDataSetChanged()
-        // TODO Ukljuciti i iskljuciti back i forward dugmice
+        bBack.isEnabled = FileManager.canGoBack()
+        bForward.isEnabled = FileManager.canGoForward()
     }
 
     override fun onSelectionModeChange(mode: MenuMode) {

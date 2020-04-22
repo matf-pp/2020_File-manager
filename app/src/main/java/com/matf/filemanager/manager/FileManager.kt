@@ -158,6 +158,9 @@ object FileManager {
         listener?.onClipboardChange(clipboardMode)
     }
 
-    // TODO canGoBack/Forward za enable dugmica
+    
+    fun canGoBack() : Boolean = stateSaver.canGoBack()
+
+    fun canGoForward() : Boolean = stateSaver.canGoForward()
 
 }
