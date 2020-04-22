@@ -159,9 +159,6 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
                 false
             )
         )
-
-        bBack.isEnabled = true
-        bForward.isEnabled = true
     }
 
     override fun onRequestPermissionsResult(

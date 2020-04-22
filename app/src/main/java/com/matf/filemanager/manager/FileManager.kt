@@ -158,7 +158,7 @@ object FileManager {
         listener?.onClipboardChange(clipboardMode)
     }
 
-    
+
     fun canGoBack() : Boolean = stateSaver.canGoBack()
 
     fun canGoForward() : Boolean = stateSaver.canGoForward()
