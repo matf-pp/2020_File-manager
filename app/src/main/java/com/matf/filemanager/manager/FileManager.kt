@@ -1,6 +1,5 @@
 package com.matf.filemanager.manager
 
-import android.util.Log
 import com.matf.filemanager.util.ClipboardMode
 import com.matf.filemanager.versions.StateSaver
 import com.matf.filemanager.util.FileManagerChangeListener
@@ -12,11 +11,16 @@ object FileManager {
     private var stateSaver: StateSaver<FileEntry> = StateSaver()
 
     var currentDirectory: File? = null
+        private set
     var entries: ArrayList<FileEntry> = ArrayList()
+        private set
 
     var menuMode: MenuMode = MenuMode.OPEN
+        private set
     var clipboardMode: ClipboardMode = ClipboardMode.NONE
-    private var clipboard: ArrayList<File> = ArrayList()
+        private set
+    var clipboard: ArrayList<File> = ArrayList()
+        private set
 
     private var listener: FileManagerChangeListener? = null
 
@@ -32,7 +36,6 @@ object FileManager {
                 return false
             }
         } else {
-            Log.d("TODO", "OPEN THIS FILE")
             // TODO Pozvati onRequestFileOpen
             return false
         }
@@ -54,13 +57,17 @@ object FileManager {
         return false
     }
 
+    fun canGoBack() : Boolean = stateSaver.canGoBack()
+
+    fun canGoForward() : Boolean = stateSaver.canGoForward()
+
     fun refresh() {
-        // TODO Dont mutate entries in stateSaver
+        // TODO Don't mutate entries in stateSaver
         entries.clear()
         entries.addAll(stateSaver.getCurrentInstance()?.listFileEntries().orEmpty())
 
         if(menuMode == MenuMode.SELECT) toggleSelectionMode()
-        notifyEntryChanged()
+        notifyEntriesChanged()
     }
 
     fun toggleSelectionMode(){
@@ -75,12 +82,13 @@ object FileManager {
             }
         }
         notifySelectionModeChanged()
-        notifyEntryChanged()
+        notifyEntriesChanged()
     }
 
     fun toggleSelectionAt(i: Int){
         entries[i].selected = !entries[i].selected
-        notifyEntryChanged()
+        notifyEntriesChanged()
+        notifySelectionModeChanged()
     }
 
     fun moveSelectedToClipboard(mode: ClipboardMode) {
@@ -88,22 +96,23 @@ object FileManager {
         when(menuMode){
             MenuMode.SELECT -> {
                 clipboard.clear()
-                // Malo funkcionalnog programiranja :)
                 clipboard.addAll(entries.filter { e -> e.selected }.map { e -> e.file })
-                println("moved to clipboard")
             }
             MenuMode.OPEN -> {
-                // TODO Nismo u modu za selekciju, ili ocistiti clipboard ili ne raditi nista
+                // Nismo u modu za selekciju, ispraznicemo clipboard
+                // Nikada ne bi trebalo da dodjemo ovde
+                clipboard.clear()
             }
 
         }
         notifyClipboardChanged()
     }
 
-    fun copy() {
-        println("copying files")
-//        if(currentDirectory==null)
-//            return
+    fun selectionEmpty(): Boolean {
+        return entries.none { e -> e.selected }
+    }
+
+    private fun copy() {
         for(f in clipboard) {
             if(currentDirectory?.startsWith(f) == true){
                 continue
@@ -122,19 +131,17 @@ object FileManager {
             if(!f.isDirectory)
                 new_name += "." + f.extension
             listener?.copyFile(f, currentDirectory?.resolve(new_name) as File)
-
         }
-        refresh()
     }
 
     fun paste() {
         when(clipboardMode) {
             ClipboardMode.NONE -> {
-                //TODO Error shouldn be able to press button
+                // Nikada ne bi trebalo da dodjemo ovde
             }
             ClipboardMode.COPY -> {
                 copy()
-                //TODO Clear clipboard
+
                 clipboard.clear()
                 clipboardMode = ClipboardMode.NONE
                 notifyClipboardChanged()
@@ -146,7 +153,7 @@ object FileManager {
         this.listener = listener
     }
 
-    private fun notifyEntryChanged() {
+    private fun notifyEntriesChanged() {
         listener?.onEntriesChange()
     }
 
@@ -157,10 +164,5 @@ object FileManager {
     private fun notifyClipboardChanged() {
         listener?.onClipboardChange(clipboardMode)
     }
-
-
-    fun canGoBack() : Boolean = stateSaver.canGoBack()
-
-    fun canGoForward() : Boolean = stateSaver.canGoForward()
 
 }

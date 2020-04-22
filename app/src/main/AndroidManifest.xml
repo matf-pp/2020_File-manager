@@ -27,8 +27,9 @@
         </activity>
 
         <service
-            android:name=".CopyService"
-            android:exported="false"/>
+            android:name=".service.FileActionService"
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE"/>
     </application>
 
 </manifest>

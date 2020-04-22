@@ -19,7 +19,10 @@ import com.matf.filemanager.launcher.TextFileActivity
 import com.matf.filemanager.launcher.VideoFileActivity
 import com.matf.filemanager.manager.FileEntry
 import com.matf.filemanager.manager.FileManager
+import com.matf.filemanager.service.FileActionReceiver
+import com.matf.filemanager.service.FileActionService
 import com.matf.filemanager.util.ClipboardMode
+import com.matf.filemanager.util.FileActions
 import com.matf.filemanager.util.FileManagerChangeListener
 import com.matf.filemanager.util.MenuMode
 import java.io.File
@@ -39,7 +42,7 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
     private lateinit var bPaste: Button
 
     private lateinit var adapter: FileEntryAdapter
-    private lateinit var copyReceiver: CopyReceiver
+    private lateinit var fileActionReceiver: FileActionReceiver
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,7 +82,7 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
             if(FileManager.menuMode == MenuMode.OPEN){
                 val item: FileEntry = lFileEntries.getItemAtPosition(position) as FileEntry
                 if (!FileManager.goTo(item)) {
-                    // TODO Pomeriti ovo u adapter.goTo
+                    // TODO Pomeriti ovo u onRequestFileOpen
                     if(item.file.extension.matches(Regex("^(txt|html|css|js|c|h|cpp|hpp|py|java)$"))) {
                         val intent = Intent(this, TextFileActivity::class.java)
                         intent.putExtra("file_path", item.file.absolutePath.toString())
@@ -140,12 +143,12 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
             FileManager.paste()
         }
 
-        copyReceiver = CopyReceiver(Handler())
-        copyReceiver.setReceiver(object: CopyReceiver.Receiver {
+        fileActionReceiver = FileActionReceiver(Handler())
+        fileActionReceiver.setReceiver(object: FileActionReceiver.Receiver {
             override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
                 if (resultCode == Activity.RESULT_OK) {
-                    val resultValue = resultData?.getString("resultValue")
-                    Toast.makeText(this@MainActivity, resultValue, Toast.LENGTH_SHORT).show()
+//                    val resultValue = resultData?.getString("resultValue")
+                    Toast.makeText(this@MainActivity, "Done", Toast.LENGTH_SHORT).show()
                     FileManager.refresh()
                 }
             }
@@ -189,12 +192,21 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
             MenuMode.OPEN -> {
                 if(FileManager.clipboardMode == ClipboardMode.NONE)
                     layoutBottomMenu.visibility = LinearLayout.GONE
+                bCopy.isEnabled = false
+                bCut.isEnabled = false
+                bDelete.isEnabled = false
             }
             MenuMode.SELECT -> {
                 layoutBottomMenu.visibility = LinearLayout.VISIBLE
-                bCopy.isEnabled = true
-                bCut.isEnabled = true
-                bDelete.isEnabled = true
+                if(FileManager.selectionEmpty()) {
+                    bCopy.isEnabled = false
+                    bCut.isEnabled = false
+                    bDelete.isEnabled = false
+                } else {
+                    bCopy.isEnabled = true
+                    bCut.isEnabled = true
+                    bDelete.isEnabled = true
+                }
             }
         }
     }
@@ -202,27 +214,30 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
     override fun onClipboardChange(mode: ClipboardMode) {
         when(mode) {
             ClipboardMode.COPY, ClipboardMode.CUT -> {
+                layoutBottomMenu.visibility = LinearLayout.VISIBLE
                 bPaste.isEnabled = true
             }
             else -> {
+
                 bPaste.isEnabled = false
             }
         }
     }
 
     override fun copyFile(src: File, dest: File) {
-        val i = Intent(this, CopyService::class.java)
+        val i = Intent(this, FileActionService::class.java)
+
+        i.putExtra("action", FileActions.COPY)
         if(src.isDirectory) {
-            println("copying dir")
             i.putExtra("type", "dir")
         } else {
-            println("copying file")
             i.putExtra("type", "file")
         }
         i.putExtra("src", src.absolutePath)
         i.putExtra("dest", dest.absolutePath)
-        i.putExtra("receiver", copyReceiver)
-        startService(i)
+        i.putExtra("receiver", fileActionReceiver)
+
+        FileActionService.enqueueWork(this, i)
     }
 
     // TODO OnBack call FileManager.onBack instead of exiting

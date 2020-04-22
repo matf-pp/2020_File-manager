@@ -1,10 +1,10 @@
-package com.matf.filemanager
+package com.matf.filemanager.service
 
 import android.os.Bundle
 import android.os.Handler
 import android.os.ResultReceiver
 
-class CopyReceiver(handler: Handler?) : ResultReceiver(handler) {
+class FileActionReceiver(handler: Handler?) : ResultReceiver(handler) {
     private var receiver: Receiver? = null
 
     fun setReceiver(receiver: Receiver?) {
@@ -16,8 +16,6 @@ class CopyReceiver(handler: Handler?) : ResultReceiver(handler) {
     }
 
     override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
-        if (receiver != null) {
-            receiver!!.onReceiveResult(resultCode, resultData)
-        }
+        receiver?.onReceiveResult(resultCode, resultData)
     }
 }
