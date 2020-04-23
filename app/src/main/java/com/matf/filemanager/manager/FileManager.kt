@@ -8,10 +8,10 @@ import java.io.File
 
 object FileManager {
 
-    private var history: StateSaver<FileEntry> = StateSaver()
+    private var history: StateSaver<File> = StateSaver()
 
     val currentDirectory: File?
-        get() = history.getCurrentInstance()?.file
+        get() = history.getCurrentInstance()
     var entries: ArrayList<FileEntry> = ArrayList()
         private set
 
@@ -24,15 +24,23 @@ object FileManager {
 
     private var listener: FileManagerChangeListener? = null
 
-    fun goTo(entry: FileEntry): Boolean {
-        if(!entry.file.exists())
+    private fun listFileEntries(file: File?): List<FileEntry> {
+        if(file == null)
+            return emptyList()
+        return file.listFiles()
+            .sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name })
+            .map { f -> FileEntry(f) }
+    }
+
+    fun goTo(file: File): Boolean {
+        if(!file.exists())
             return false
 
-        if(entry.file.isDirectory) {
-            history.goTo(entry)
+        if(file.isDirectory) {
+            history.goTo(file)
             refresh()
         } else {
-            return requestFileOpen(entry.file)
+            return requestFileOpen(file)
         }
         return true
     }
@@ -58,9 +66,8 @@ object FileManager {
     fun canGoForward() : Boolean = history.canGoForward()
 
     fun refresh() {
-        // TODO Don't mutate entries in stateSaver
         entries.clear()
-        entries.addAll(history.getCurrentInstance()?.listFileEntries().orEmpty())
+        entries.addAll(listFileEntries(history.getCurrentInstance()))
 
         if(menuMode == MenuMode.SELECT) toggleSelectionMode()
         notifyEntriesChanged()

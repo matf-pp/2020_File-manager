@@ -83,7 +83,7 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
         lFileEntries.setOnItemClickListener { _, _, position, _ ->
             if(FileManager.menuMode == MenuMode.OPEN){
                 val item: FileEntry = lFileEntries.getItemAtPosition(position) as FileEntry
-                if (!FileManager.goTo(item)) {
+                if (!FileManager.goTo(item.file)) {
                     Toast.makeText(this, "Nije moguce otvoriti!", Toast.LENGTH_LONG).show()
                 }
             }else{
@@ -152,10 +152,7 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
 
     private fun initDirectory() {
         FileManager.goTo(
-            FileEntry(
-                Environment.getExternalStorageDirectory(),
-                false
-            )
+            Environment.getExternalStorageDirectory()
         )
     }
 
