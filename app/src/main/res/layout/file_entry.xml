@@ -5,7 +5,7 @@
     android:layout_height="wrap_content">
 
     <ImageView
-        android:id="@+id/icon"
+        android:id="@+id/imgIcon"
         android:layout_width="87dp"
         android:layout_height="66dp"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -18,8 +18,8 @@
         android:layout_height="66dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toRightOf="@id/icon"
-        app:layout_constraintRight_toLeftOf="@id/properties"
+        app:layout_constraintLeft_toRightOf="@id/imgIcon"
+        app:layout_constraintRight_toLeftOf="@id/bProperties"
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
@@ -36,12 +36,26 @@
     </LinearLayout>
 
     <ImageView
-        android:id="@+id/properties"
+        android:id="@+id/bProperties"
         android:layout_width="40dp"
         android:layout_height="66dp"
+        android:contentDescription="@null"
+        app:srcCompat="@drawable/dots"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/cbSelected"
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="visible" />
+
+    <CheckBox
+        android:id="@+id/cbSelected"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:contentDescription="@null"
-        app:srcCompat="@drawable/dots" />
+        android:visibility="gone"
+        android:clickable="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
