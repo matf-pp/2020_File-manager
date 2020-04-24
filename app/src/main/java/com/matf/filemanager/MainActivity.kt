@@ -47,6 +47,7 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
         bForward = findViewById(R.id.bForward)
         bRefresh = findViewById(R.id.bRefresh)
 
+        layoutBottomMenu = findViewById(R.id.layoutBottomMenu)
         bCopy = findViewById(R.id.bCopy)
         bCut = findViewById(R.id.bCut)
         bDelete = findViewById(R.id.bDelete)
