@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/menu_storage"
+        android:icon="@drawable/folder_empty"
+        android:title="@string/nav_menu_storage"/>
+    <item android:id="@+id/menu_downloads"
+        android:icon="@drawable/folder_empty"
+        android:title="@string/nav_menu_downloads"/>
+    <item android:id="@+id/menu_music"
+        android:icon="@drawable/folder_empty"
+        android:title="@string/nav_menu_music"/>
+    <item android:id="@+id/menu_pictures"
+        android:icon="@drawable/folder_empty"
+        android:title="@string/nav_menu_pictures"/>
+</menu>

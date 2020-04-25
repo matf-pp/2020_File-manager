@@ -1,6 +1,21 @@
 <resources>
     <string name="app_name">File Manager</string>
 
+    <string name="preference_file_key">com.matf.filemanager.preferences</string>
+    <string name="preference_system_dark_mode_key">system_dark_mode</string>
+    <string name="preference_dark_mode_key">dark_mode</string>
+
+    <string name="nav_open">Open drawer</string>
+    <string name="nav_close">Close drawer</string>
+
+    <string name="nav_menu_storage">Internal Storage</string>
+    <string name="nav_menu_downloads">Downloads</string>
+    <string name="nav_menu_music">Music</string>
+    <string name="nav_menu_pictures">Pictures</string>
+
+    <string name="nav_option_system_dark_mode">Use system dark mode settings</string>
+    <string name="nav_option_dark_mode">Dark mode</string>
+
     <string name="action_backward">Back</string>
     <string name="action_forward">Forward</string>
     <string name="action_refresh">Refresh</string>

@@ -1,14 +1,21 @@
 package com.matf.filemanager
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
 import android.widget.*
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import com.google.android.material.navigation.NavigationView
 import com.matf.filemanager.launcher.ImageFileActivity
 import com.matf.filemanager.launcher.TextFileActivity
 import com.matf.filemanager.launcher.VideoFileActivity
@@ -19,7 +26,15 @@ import com.matf.filemanager.util.MenuMode
 
 class MainActivity : AppCompatActivity(), FileManagerChangeListener {
 
+    private lateinit var sharedPreferences: SharedPreferences
     private lateinit var lFileEntries: ListView
+
+    private lateinit var toolbar: Toolbar
+    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var navigationView: NavigationView
+
+    private lateinit var sSystemDarkMode: Switch
+    private lateinit var sDarkMode: Switch
 
     private lateinit var bBack: Button
     private lateinit var bForward: Button
@@ -37,8 +52,63 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        sharedPreferences = getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE)
         adapter = FileEntryAdapter(this)
         FileManager.addEntryChangeListner(this)
+
+        toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
+
+        drawerLayout = findViewById(R.id.drawer)
+        navigationView = findViewById(R.id.nav)
+        val toggle = ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.nav_open, R.string.nav_close)
+
+        drawerLayout.addDrawerListener(toggle)
+        toggle.syncState()
+        navigationView.setNavigationItemSelectedListener {item ->
+            val directory = when(item.itemId) {
+                R.id.menu_storage -> Environment.getExternalStorageDirectory()
+                R.id.menu_downloads -> Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                R.id.menu_music -> Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC)
+                R.id.menu_pictures -> Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
+                else -> Environment.getExternalStorageDirectory()
+            }
+            FileManager.goTo(FileEntry(directory, false))
+            drawerLayout.closeDrawers()
+            false
+        }
+
+        sSystemDarkMode = findViewById(R.id.cbSystemDarkMode)
+        sDarkMode = findViewById(R.id.tDarkMode)
+
+        val systemDarkMode = sharedPreferences.getBoolean(getString(R.string.preference_system_dark_mode_key), true)
+        val darkMode = sharedPreferences.getBoolean(getString(R.string.preference_dark_mode_key), false)
+
+        sSystemDarkMode.setOnCheckedChangeListener { button, status ->
+            sharedPreferences.edit().putBoolean(getString(R.string.preference_system_dark_mode_key), status).apply()
+            if(status) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+                sDarkMode.isEnabled = false
+            } else {
+                AppCompatDelegate.setDefaultNightMode(
+                    if(sDarkMode.isChecked) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
+                )
+                sDarkMode.isEnabled = true
+            }
+        }
+
+        sDarkMode.setOnCheckedChangeListener { button, status ->
+            if(!sSystemDarkMode.isChecked) {
+                sharedPreferences.edit()
+                    .putBoolean(getString(R.string.preference_dark_mode_key), status).apply()
+                AppCompatDelegate.setDefaultNightMode(
+                    if (sDarkMode.isChecked) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
+                )
+            }
+        }
+
+        sDarkMode.isChecked = darkMode
+        sSystemDarkMode.isChecked = systemDarkMode
 
         lFileEntries = findViewById(R.id.lFileEntries)
         lFileEntries.adapter = adapter

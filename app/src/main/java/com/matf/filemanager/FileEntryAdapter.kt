@@ -24,12 +24,12 @@ class FileEntryAdapter(context: Context) : BaseAdapter() {
 
         if(!FileManager.entries[position].file.isDirectory) {
             when {
-                FileManager.entries[position].file.extension.matches(Regex("^(jpg|jpeg|png|JPG)$")) -> imageView.setImageResource(R.drawable.image)
-                FileManager.entries[position].file.extension.matches(Regex("^(mp4|mkv|webm)$")) -> imageView.setImageResource(R.drawable.music)
-                else -> imageView.setImageResource(R.drawable.text)
+                FileManager.entries[position].file.extension.matches(Regex("^(jpg|jpeg|png|JPG)$")) -> imageView.setImageResource(R.drawable.file_image)
+                FileManager.entries[position].file.extension.matches(Regex("^(mp4|mkv|webm)$")) -> imageView.setImageResource(R.drawable.file_media)
+                else -> imageView.setImageResource(R.drawable.file_text)
             }
         } else {
-            imageView.setImageResource(R.drawable.emptyfolder)
+            imageView.setImageResource(R.drawable.folder_empty)
         }
 
         if (!FileManager.entries[position].file.isDirectory)
