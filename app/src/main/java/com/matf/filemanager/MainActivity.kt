@@ -17,7 +17,6 @@ import android.widget.ListView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.app.ShareCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.matf.filemanager.launcher.ImageFileActivity
@@ -27,12 +26,7 @@ import com.matf.filemanager.manager.FileEntry
 import com.matf.filemanager.manager.FileManager
 import com.matf.filemanager.service.FileActionReceiver
 import com.matf.filemanager.service.FileActionService
-import com.matf.filemanager.types.FileType
-import com.matf.filemanager.types.FileTypeDetect
-import com.matf.filemanager.util.ClipboardMode
-import com.matf.filemanager.util.FileActions
-import com.matf.filemanager.util.FileManagerChangeListener
-import com.matf.filemanager.util.MenuMode
+import com.matf.filemanager.util.*
 import java.io.File
 
 
@@ -112,7 +106,6 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
                 FileManager.toggleSelectionAt(position)
             }
         }
-
 
         lFileEntries.setOnItemLongClickListener { adapterView, view, position, l ->
             if(FileManager.menuMode == MenuMode.OPEN) {
@@ -243,39 +236,26 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
     }
 
     override fun onRequestFileOpen(file: File): Boolean {
-        val fileType: FileType = FileTypeDetect.detectFileType(file)
-        var intent: Intent
-        when (fileType) {
-            FileType.TEXT -> {
-                intent = Intent(this, TextFileActivity::class.java)
-            }
-            FileType.VIDEO -> {
-                intent = Intent(this, VideoFileActivity::class.java)
-            }
-            FileType.AUDIO -> {
-                TODO("Not implemented")
-            }
-            FileType.IMAGE -> {
-                intent = Intent(this, ImageFileActivity::class.java)
-            }
-            FileType.UNKNOWN -> {
-                return onRequestFileOpenWith(file)
-            }
-
+        val intent: Intent? = when(getTypeFromExtension(file.extension)) {
+            FileTypes.TEXT -> Intent(this, TextFileActivity::class.java)
+            FileTypes.IMAGE -> Intent(this, ImageFileActivity::class.java)
+            FileTypes.VIDEO -> Intent(this, VideoFileActivity::class.java)
+            else -> null
         }
-        intent.putExtra("file_path", file.absolutePath.toString())
-        startActivity(intent)
-        return true
-
+        if(intent != null) {
+            intent.putExtra("file_path", file.absolutePath.toString())
+            startActivity(intent)
+            return true
+        }
+        return false
     }
 
     override fun onRequestFileOpenWith(file: File): Boolean {
-
         val uri = FileProvider.getUriForFile(this, "android.matf", file)
         val intent = Intent(Intent.ACTION_VIEW)
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
 
-        val mimeType: String = MimeTypeMap.getSingleton().getMimeTypeFromExtension(file.extension)?:"*/*"
+        val mimeType: String = MimeTypeMap.getSingleton().getMimeTypeFromExtension(file.extension) ?: "*/*"
         intent.setDataAndType(uri, mimeType)
         try {
             startActivity(intent)
@@ -324,8 +304,6 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
 
         builder.show()
     }
-
-
 
     override fun onBackPressed() {
         handleBackClick()

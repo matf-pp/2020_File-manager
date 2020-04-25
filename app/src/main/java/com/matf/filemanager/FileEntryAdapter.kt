@@ -8,7 +8,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import com.matf.filemanager.manager.FileManager
+import com.matf.filemanager.util.FileTypes
 import com.matf.filemanager.util.MenuMode
+import com.matf.filemanager.util.getSizeString
+import com.matf.filemanager.util.getTypeFromExtension
 
 class FileEntryAdapter(context: Context) : BaseAdapter() {
 
@@ -24,18 +27,21 @@ class FileEntryAdapter(context: Context) : BaseAdapter() {
         val cbSelected: CheckBox = view.findViewById(R.id.cbSelected)
 
         if(!FileManager.entries[position].file.isDirectory) {
-            when {
-                FileManager.entries[position].file.extension.matches(Regex("^(jpg|jpeg|png|JPG)$")) -> imgIcon.setImageResource(R.drawable.image)
-                FileManager.entries[position].file.extension.matches(Regex("^(mp4|mkv|webm)$")) -> imgIcon.setImageResource(R.drawable.music)
+            when(getTypeFromExtension(FileManager.entries[position].file.extension)) {
+                FileTypes.IMAGE -> imgIcon.setImageResource(R.drawable.image)
+                FileTypes.AUDIO, FileTypes.VIDEO -> imgIcon.setImageResource(R.drawable.music)
                 else -> imgIcon.setImageResource(R.drawable.text)
             }
         } else {
-            imgIcon.setImageResource(R.drawable.emptyfolder)
+            if(FileManager.entries[position].file.listFiles().isEmpty())
+                imgIcon.setImageResource(R.drawable.emptyfolder)
+            else
+                imgIcon.setImageResource(R.drawable.filledfolder)
         }
 
         if (!FileManager.entries[position].file.isDirectory)
             view.findViewById<TextView>(R.id.fileSizetv).text =
-                view.context.getString(R.string.text_size, FileManager.entries[position].file.length())
+                view.context.getString(R.string.text_size, getSizeString(FileManager.entries[position].file))
         else
             view.findViewById<TextView>(R.id.fileSizetv).text = ""
 

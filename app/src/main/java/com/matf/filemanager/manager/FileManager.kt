@@ -24,7 +24,6 @@ object FileManager {
 
     private var selectionSize : Int = 0
 
-
     private var listener: FileManagerChangeListener? = null
 
     private fun listFileEntries(file: File?): List<FileEntry> {
