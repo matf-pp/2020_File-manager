@@ -22,6 +22,9 @@ object FileManager {
     var clipboard: ArrayList<File> = ArrayList()
         private set
 
+    private var selectionSize : Int = 0
+
+
     private var listener: FileManagerChangeListener? = null
 
     private fun listFileEntries(file: File?): List<FileEntry> {
@@ -80,8 +83,12 @@ object FileManager {
             }
             MenuMode.SELECT -> {
                 menuMode = MenuMode.OPEN
-                for (f in entries)
+                for (f in entries){
                     f.selected = false
+                    selectionSize = 0
+                }
+
+
             }
         }
         notifySelectionModeChanged()
@@ -89,6 +96,11 @@ object FileManager {
     }
 
     fun toggleSelectionAt(i: Int){
+        if(entries[i].selected){
+            selectionSize--
+        }else{
+            selectionSize++
+        }
         entries[i].selected = !entries[i].selected
         notifyEntriesChanged()
         notifySelectionModeChanged()
@@ -114,6 +126,13 @@ object FileManager {
     fun selectionEmpty(): Boolean {
         return entries.none { e -> e.selected }
     }
+
+    fun canOpenWith() : Boolean {
+        if (selectionSize != 1) return false
+        val f: File = entries.findLast { f -> f.selected }?.file ?: return false
+        return !f.isDirectory
+    }
+
 
     private fun copy() {
         listener?.copyFile(
@@ -176,7 +195,15 @@ object FileManager {
     }
 
     private fun requestFileOpen(file: File): Boolean {
-        return listener?.onRequestFileOpen(file)==true
+        return listener?.onRequestFileOpen(file) == true
     }
+
+    fun requestFileOpenWith(): Boolean {
+        val file : File = entries.find { f -> f.selected}?.file ?: return false
+
+        return listener?.onRequestFileOpenWith(file) == true
+    }
+
+
 
 }

@@ -5,9 +5,11 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
+import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.ListView
@@ -15,6 +17,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import com.matf.filemanager.launcher.ImageFileActivity
 import com.matf.filemanager.launcher.TextFileActivity
 import com.matf.filemanager.launcher.VideoFileActivity
@@ -22,6 +25,8 @@ import com.matf.filemanager.manager.FileEntry
 import com.matf.filemanager.manager.FileManager
 import com.matf.filemanager.service.FileActionReceiver
 import com.matf.filemanager.service.FileActionService
+import com.matf.filemanager.types.FileType
+import com.matf.filemanager.types.FileTypeDetect
 import com.matf.filemanager.util.ClipboardMode
 import com.matf.filemanager.util.FileActions
 import com.matf.filemanager.util.FileManagerChangeListener
@@ -42,6 +47,7 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
     private lateinit var bCut: Button
     private lateinit var bDelete: Button
     private lateinit var bPaste: Button
+    private lateinit var bOpenWith: Button
 
     private lateinit var adapter: FileEntryAdapter
     private lateinit var fileActionReceiver: FileActionReceiver
@@ -59,6 +65,7 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
         bBack = findViewById(R.id.bBack)
         bForward = findViewById(R.id.bForward)
         bRefresh = findViewById(R.id.bRefresh)
+        bOpenWith = findViewById(R.id.bOpenWith)
 
         layoutBottomMenu = findViewById(R.id.layoutBottomMenu)
         bCopy = findViewById(R.id.bCopy)
@@ -91,6 +98,7 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
             }
         }
 
+
         lFileEntries.setOnItemLongClickListener { adapterView, view, position, l ->
             if(FileManager.menuMode == MenuMode.OPEN) {
                 FileManager.toggleSelectionMode()
@@ -120,6 +128,10 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
 
         bRefresh.setOnClickListener {
             FileManager.refresh()
+        }
+
+        bOpenWith.setOnClickListener {
+            FileManager.requestFileOpenWith()
         }
 
         bCopy.setOnClickListener {
@@ -187,6 +199,7 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
                 bCopy.isEnabled = false
                 bCut.isEnabled = false
                 bDelete.isEnabled = false
+                bOpenWith.visibility = View.INVISIBLE
             }
             MenuMode.SELECT -> {
                 layoutBottomMenu.visibility = LinearLayout.VISIBLE
@@ -194,10 +207,17 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
                     bCopy.isEnabled = false
                     bCut.isEnabled = false
                     bDelete.isEnabled = false
+                    bOpenWith.visibility = View.INVISIBLE
                 } else {
                     bCopy.isEnabled = true
                     bCut.isEnabled = true
                     bDelete.isEnabled = true
+                    if(FileManager.canOpenWith())
+                        bOpenWith.visibility = View.VISIBLE
+                    else
+                        bOpenWith.visibility = View.INVISIBLE
+
+
                 }
             }
         }
@@ -217,23 +237,39 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
     }
 
     override fun onRequestFileOpen(file: File): Boolean {
-        if(file.extension.matches(Regex("^(txt|html|css|js|c|h|cpp|hpp|py|java)$"))) {
-            val intent = Intent(this, TextFileActivity::class.java)
-            intent.putExtra("file_path", file.absolutePath.toString())
-            startActivity(intent)
-            return true
-        } else if(file.extension.matches(Regex("^(jpg|jpeg|png|JPG)$"))){
-            val intent = Intent(this, ImageFileActivity::class.java)
-            intent.putExtra("file_path", file.absolutePath.toString())
-            startActivity(intent)
-            return true
-        } else if(file.extension.matches(Regex("^(mp4|mkv|webm)$"))) {
-            val intent = Intent(this, VideoFileActivity::class.java)
-            intent.putExtra("file_path", file.absolutePath.toString())
-            startActivity(intent)
-            return true
+        val fileType: FileType = FileTypeDetect.detectFileType(file)
+        var intent: Intent
+        when (fileType) {
+            FileType.TEXT -> {
+                intent = Intent(this, TextFileActivity::class.java)
+            }
+            FileType.VIDEO -> {
+                intent = Intent(this, VideoFileActivity::class.java)
+            }
+            FileType.AUDIO -> {
+                TODO("Not implemented")
+            }
+            FileType.IMAGE -> {
+                intent = Intent(this, ImageFileActivity::class.java)
+            }
+            FileType.UNKNOWN -> {
+                return onRequestFileOpenWith(file)
+            }
+
         }
-        return false
+        intent.putExtra("file_path", file.absolutePath.toString())
+        startActivity(intent)
+        return true
+
+    }
+
+    override fun onRequestFileOpenWith(file: File): Boolean {
+        val fileURI: Uri = Uri.fromFile(file)
+        intent = Intent(Intent.ACTION_VIEW)
+        intent.setDataAndType(fileURI, "application/octet-stream")
+        intent.putExtra("file_path", file.absolutePath.toString())
+        startActivity(Intent.createChooser(intent, "Choose an app to open " + file.name))
+        return true
     }
 
     override fun copyFile(targets: List<File>, dest: File) {
@@ -276,5 +312,9 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
         builder.show()
     }
 
-    // TODO OnBack call FileManager.onBack instead of exiting
+
+
+    override fun onBackPressed() {
+        FileManager.goBack()
+    }
 }

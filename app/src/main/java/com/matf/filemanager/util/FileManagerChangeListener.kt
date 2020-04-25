@@ -7,6 +7,7 @@ interface FileManagerChangeListener {
     fun onSelectionModeChange(mode : MenuMode)
     fun onClipboardChange(mode : ClipboardMode)
     fun onRequestFileOpen(file: File): Boolean
+    fun onRequestFileOpenWith(file: File) : Boolean
 
     fun copyFile(targets: List<File>, dest: File)
     fun moveFile(targets: List<File>, dest: File)
