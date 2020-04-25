@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
 import android.view.View
+import android.webkit.MimeTypeMap
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.ListView
@@ -265,37 +266,22 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
     }
 
     override fun onRequestFileOpenWith(file: File): Boolean {
-//        val fileURI: Uri = Uri.fromFile(file)
-//        intent = Intent(Intent.ACTION_VIEW)
-//        intent.setDataAndType(fileURI, "application/octet-stream")
-//        intent.putExtra("file_path", file.absolutePath.toString())
-//        startActivity(Intent.createChooser(intent, "Choose an app to open " + file.name))
 
-
-        // Write data in your file
-
-        // Write data in your file
         val uri = FileProvider.getUriForFile(this, "android.matf", file)
         val intent = Intent(Intent.ACTION_VIEW)
-        intent.setDataAndType(uri, "*/*")
-
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
 
-//        val intent = ShareCompat.IntentBuilder.from(this)
-//            .setStream(uri) // uri from FileProvider
-//            .setType("")
-//            .intent
-//            .setAction(Intent.ACTION_VIEW) //Change if needed
-//            .setDataAndType(uri, "")
-//            .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
 
+
+        val fileType: FileType = FileTypeDetect.detectFileType(file)
+        var mimeType: String? = MimeTypeMap.getSingleton().getMimeTypeFromExtension(file.extension)
+        if(null == mimeType) mimeType = "*/*"
+        intent.setDataAndType(uri, mimeType)
         try {
             startActivity(intent)
         }catch (e: ActivityNotFoundException){
-            Toast.makeText(this, "NE MOZEEEE", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "No app can open this file.", Toast.LENGTH_LONG).show()
         }
-
-
 
         return true
     }
