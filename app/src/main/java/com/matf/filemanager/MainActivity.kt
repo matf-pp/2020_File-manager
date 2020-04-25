@@ -3,6 +3,7 @@ package com.matf.filemanager
 import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -275,16 +276,26 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
 
         // Write data in your file
         val uri = FileProvider.getUriForFile(this, "android.matf", file)
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.setDataAndType(uri, "*/*")
 
-        val intent = ShareCompat.IntentBuilder.from(this)
-            .setStream(uri) // uri from FileProvider
-            .setType("application/octet-stream")
-            .intent
-            .setAction(Intent.ACTION_VIEW) //Change if needed
-            .setDataAndType(uri, "application/octet-stream")
-            .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
 
-        startActivity(intent)
+//        val intent = ShareCompat.IntentBuilder.from(this)
+//            .setStream(uri) // uri from FileProvider
+//            .setType("")
+//            .intent
+//            .setAction(Intent.ACTION_VIEW) //Change if needed
+//            .setDataAndType(uri, "")
+//            .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+
+        try {
+            startActivity(intent)
+        }catch (e: ActivityNotFoundException){
+            Toast.makeText(this, "NE MOZEEEE", Toast.LENGTH_LONG).show()
+        }
+
+
 
         return true
     }
