@@ -229,7 +229,7 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
                 bPaste.isEnabled = true
             }
             else -> {
-
+                layoutBottomMenu.visibility = LinearLayout.GONE
                 bPaste.isEnabled = false
             }
         }
