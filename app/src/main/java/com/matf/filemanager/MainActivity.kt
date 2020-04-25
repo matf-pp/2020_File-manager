@@ -54,6 +54,19 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
     private lateinit var adapter: FileEntryAdapter
     private lateinit var fileActionReceiver: FileActionReceiver
 
+    private fun handleBackClick(){
+        when(FileManager.menuMode) {
+            MenuMode.OPEN -> {
+                if (!FileManager.goBack()) {
+                    Toast.makeText(this, "greska", Toast.LENGTH_SHORT).show()
+                }
+            }
+            MenuMode.SELECT -> {
+                FileManager.toggleSelectionMode()
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -110,16 +123,7 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
         }
 
         bBack.setOnClickListener {
-            when(FileManager.menuMode) {
-                MenuMode.OPEN -> {
-                    if (!FileManager.goBack()) {
-                        Toast.makeText(this, "greska", Toast.LENGTH_SHORT).show()
-                    }
-                }
-                MenuMode.SELECT -> {
-                    FileManager.toggleSelectionMode()
-                }
-            }
+            handleBackClick()
         }
 
         bForward.setOnClickListener {
@@ -271,18 +275,13 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
         val intent = Intent(Intent.ACTION_VIEW)
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
 
-
-
-        val fileType: FileType = FileTypeDetect.detectFileType(file)
-        var mimeType: String? = MimeTypeMap.getSingleton().getMimeTypeFromExtension(file.extension)
-        if(null == mimeType) mimeType = "*/*"
+        val mimeType: String = MimeTypeMap.getSingleton().getMimeTypeFromExtension(file.extension)?:"*/*"
         intent.setDataAndType(uri, mimeType)
         try {
             startActivity(intent)
         }catch (e: ActivityNotFoundException){
             Toast.makeText(this, "No app can open this file.", Toast.LENGTH_LONG).show()
         }
-
         return true
     }
 
@@ -329,6 +328,6 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
 
 
     override fun onBackPressed() {
-        FileManager.goBack()
+        handleBackClick()
     }
 }
