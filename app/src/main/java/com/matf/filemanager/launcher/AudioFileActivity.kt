@@ -109,8 +109,10 @@ class AudioFileActivity : AppCompatActivity() {
         }
     }
 
-    fun closeAudio() {
-        mp.release()
+    override fun onPause(){
+        super.onPause()
+        if(this.isFinishing)
+            mp.stop()
     }
 
 }
