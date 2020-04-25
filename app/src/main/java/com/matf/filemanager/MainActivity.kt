@@ -6,6 +6,7 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
@@ -17,7 +18,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
+import androidx.core.content.FileProvider
 import com.matf.filemanager.launcher.ImageFileActivity
 import com.matf.filemanager.launcher.TextFileActivity
 import com.matf.filemanager.launcher.VideoFileActivity
@@ -264,11 +265,26 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
     }
 
     override fun onRequestFileOpenWith(file: File): Boolean {
-        val fileURI: Uri = Uri.fromFile(file)
-        intent = Intent(Intent.ACTION_VIEW)
-        intent.setDataAndType(fileURI, "application/octet-stream")
-        intent.putExtra("file_path", file.absolutePath.toString())
-        startActivity(Intent.createChooser(intent, "Choose an app to open " + file.name))
+//        val fileURI: Uri = Uri.fromFile(file)
+//        intent = Intent(Intent.ACTION_VIEW)
+//        intent.setDataAndType(fileURI, "application/octet-stream")
+//        intent.putExtra("file_path", file.absolutePath.toString())
+//        startActivity(Intent.createChooser(intent, "Choose an app to open " + file.name))
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            val apkURI = FileProvider.getUriForFile(
+                applicationContext,
+                "$packageName.provider",
+                file
+            )
+            intent.setDataAndType(apkURI, "application/octet-stream")
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        } else {
+            intent.setDataAndType(Uri.fromFile(file), "application/octet-stream")
+        }
+        startActivity(intent)
+
         return true
     }
 
