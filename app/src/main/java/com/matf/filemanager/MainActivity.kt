@@ -212,7 +212,7 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
                     bCopy.isEnabled = true
                     bCut.isEnabled = true
                     bDelete.isEnabled = true
-                    if(FileManager.selectionSize == 1)
+                    if(FileManager.canOpenWith())
                         bOpenWith.visibility = View.VISIBLE
                     else
                         bOpenWith.visibility = View.INVISIBLE

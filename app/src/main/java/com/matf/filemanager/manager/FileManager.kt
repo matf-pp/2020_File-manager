@@ -22,7 +22,7 @@ object FileManager {
     var clipboard: ArrayList<File> = ArrayList()
         private set
 
-    var selectionSize : Int = 0
+    private var selectionSize : Int = 0
 
 
     private var listener: FileManagerChangeListener? = null
@@ -126,6 +126,13 @@ object FileManager {
     fun selectionEmpty(): Boolean {
         return entries.none { e -> e.selected }
     }
+
+    fun canOpenWith() : Boolean {
+        if (selectionSize != 1) return false
+        val f: File = entries.findLast { f -> f.selected }?.file ?: return false
+        return !f.isDirectory
+    }
+
 
     private fun copy() {
         listener?.copyFile(
