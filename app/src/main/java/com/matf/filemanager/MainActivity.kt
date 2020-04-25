@@ -5,8 +5,6 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
@@ -17,6 +15,7 @@ import android.widget.ListView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.app.ShareCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.matf.filemanager.launcher.ImageFileActivity
@@ -270,19 +269,21 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
 //        intent.setDataAndType(fileURI, "application/octet-stream")
 //        intent.putExtra("file_path", file.absolutePath.toString())
 //        startActivity(Intent.createChooser(intent, "Choose an app to open " + file.name))
-        val intent = Intent(Intent.ACTION_VIEW)
-        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            val apkURI = FileProvider.getUriForFile(
-                applicationContext,
-                "$packageName.provider",
-                file
-            )
-            intent.setDataAndType(apkURI, "application/octet-stream")
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        } else {
-            intent.setDataAndType(Uri.fromFile(file), "application/octet-stream")
-        }
+
+
+        // Write data in your file
+
+        // Write data in your file
+        val uri = FileProvider.getUriForFile(this, "android.matf", file)
+
+        val intent = ShareCompat.IntentBuilder.from(this)
+            .setStream(uri) // uri from FileProvider
+            .setType("application/octet-stream")
+            .intent
+            .setAction(Intent.ACTION_VIEW) //Change if needed
+            .setDataAndType(uri, "application/octet-stream")
+            .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+
         startActivity(intent)
 
         return true
