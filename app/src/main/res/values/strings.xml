@@ -8,6 +8,7 @@
     <string name="action_cut">Cut</string>
     <string name="action_delete">Delete</string>
     <string name="action_paste">Paste</string>
+    <string name="action_open_with">Open With</string>
 
     <string name="text_size">size: %1$d bytes</string>
 </resources>
