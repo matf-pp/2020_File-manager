@@ -22,9 +22,7 @@ open class StateSaver<T> : Versionable<T>{
             history.add(newElement)
             currentInstanceIndex++
         }
-
         return true
-
     }
 
     override fun goBack(): Boolean {

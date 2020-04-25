@@ -15,6 +15,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.matf.filemanager.launcher.AudioFileActivity
 import com.matf.filemanager.launcher.ImageFileActivity
 import com.matf.filemanager.launcher.TextFileActivity
 import com.matf.filemanager.launcher.VideoFileActivity
@@ -230,6 +231,12 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
         } else if(file.extension.matches(Regex("^(mp4|mkv|webm)$"))) {
             val intent = Intent(this, VideoFileActivity::class.java)
             intent.putExtra("file_path", file.absolutePath.toString())
+            startActivity(intent)
+            return true
+        }
+        else if(file.extension.matches(Regex("^(mp3)$"))){
+            val intent = Intent(this, AudioFileActivity::class.java)
+            intent.putExtra("audioUri", file.absoluteFile.toString())
             startActivity(intent)
             return true
         }
