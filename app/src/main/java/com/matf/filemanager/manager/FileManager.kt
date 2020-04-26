@@ -105,6 +105,13 @@ object FileManager {
         notifySelectionModeChanged()
     }
 
+    fun moveToClipboard(file: File, mode: ClipboardMode) {
+        clipboardMode = mode
+        clipboard.clear()
+        clipboard.add(file)
+        notifyClipboardChanged()
+    }
+
     fun moveSelectedToClipboard(mode: ClipboardMode) {
         clipboardMode = mode
         when(menuMode){
@@ -126,12 +133,9 @@ object FileManager {
         return entries.none { e -> e.selected }
     }
 
-    fun canOpenWith() : Boolean {
-        if (selectionSize != 1) return false
-        val f: File = entries.findLast { f -> f.selected }?.file ?: return false
-        return !f.isDirectory
+    fun canOpenWith(file: File) : Boolean {
+        return !file.isDirectory
     }
-
 
     private fun copy() {
         listener?.copyFile(
@@ -149,7 +153,13 @@ object FileManager {
         )
     }
 
-    fun delete() {
+    fun delete(file: File) {
+        listener?.deleteFile(
+            listOf(file)
+        )
+    }
+
+    fun deleteSelected() {
         listener?.deleteFile(
             entries.filter { e -> e.selected && e.file.exists() }.map {e -> e.file}
         )
@@ -197,12 +207,8 @@ object FileManager {
         return listener?.onRequestFileOpen(file) == true
     }
 
-    fun requestFileOpenWith(): Boolean {
-        val file : File = entries.find { f -> f.selected}?.file ?: return false
-
+    fun requestFileOpenWith(file: File): Boolean {
         return listener?.onRequestFileOpenWith(file) == true
     }
-
-
 
 }

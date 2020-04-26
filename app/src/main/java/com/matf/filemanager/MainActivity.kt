@@ -9,7 +9,6 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
-import android.view.View
 import android.webkit.MimeTypeMap
 import android.widget.Button
 import android.widget.LinearLayout
@@ -22,7 +21,6 @@ import androidx.core.content.FileProvider
 import com.matf.filemanager.launcher.ImageFileActivity
 import com.matf.filemanager.launcher.TextFileActivity
 import com.matf.filemanager.launcher.VideoFileActivity
-import com.matf.filemanager.manager.FileEntry
 import com.matf.filemanager.manager.FileManager
 import com.matf.filemanager.service.FileActionReceiver
 import com.matf.filemanager.service.FileActionService
@@ -43,7 +41,6 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
     private lateinit var bCut: Button
     private lateinit var bDelete: Button
     private lateinit var bPaste: Button
-    private lateinit var bOpenWith: Button
 
     private lateinit var adapter: FileEntryAdapter
     private lateinit var fileActionReceiver: FileActionReceiver
@@ -74,7 +71,6 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
         bBack = findViewById(R.id.bBack)
         bForward = findViewById(R.id.bForward)
         bRefresh = findViewById(R.id.bRefresh)
-        bOpenWith = findViewById(R.id.bOpenWith)
 
         layoutBottomMenu = findViewById(R.id.layoutBottomMenu)
         bCopy = findViewById(R.id.bCopy)
@@ -96,25 +92,6 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
             )
         }
 
-        lFileEntries.setOnItemClickListener { _, _, position, _ ->
-            if(FileManager.menuMode == MenuMode.OPEN){
-                val item: FileEntry = lFileEntries.getItemAtPosition(position) as FileEntry
-                if (!FileManager.goTo(item.file)) {
-                    Toast.makeText(this, "Nije moguce otvoriti!", Toast.LENGTH_LONG).show()
-                }
-            }else{
-                FileManager.toggleSelectionAt(position)
-            }
-        }
-
-        lFileEntries.setOnItemLongClickListener { adapterView, view, position, l ->
-            if(FileManager.menuMode == MenuMode.OPEN) {
-                FileManager.toggleSelectionMode()
-                FileManager.toggleSelectionAt(position)
-            }
-            true
-        }
-
         bBack.setOnClickListener {
             handleBackClick()
         }
@@ -129,10 +106,6 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
             FileManager.refresh()
         }
 
-        bOpenWith.setOnClickListener {
-            FileManager.requestFileOpenWith()
-        }
-
         bCopy.setOnClickListener {
             FileManager.moveSelectedToClipboard(ClipboardMode.COPY)
         }
@@ -142,7 +115,7 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
         }
 
         bDelete.setOnClickListener {
-            FileManager.delete()
+            FileManager.deleteSelected()
         }
 
         bPaste.setOnClickListener {
@@ -153,7 +126,6 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
         fileActionReceiver.setReceiver(object: FileActionReceiver.Receiver {
             override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
                 if (resultCode == Activity.RESULT_OK) {
-//                    val resultValue = resultData?.getString("resultValue")
                     Toast.makeText(this@MainActivity, "Done", Toast.LENGTH_SHORT).show()
                     FileManager.refresh()
                 }
@@ -198,7 +170,6 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
                 bCopy.isEnabled = false
                 bCut.isEnabled = false
                 bDelete.isEnabled = false
-                bOpenWith.visibility = View.INVISIBLE
             }
             MenuMode.SELECT -> {
                 layoutBottomMenu.visibility = LinearLayout.VISIBLE
@@ -206,17 +177,10 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
                     bCopy.isEnabled = false
                     bCut.isEnabled = false
                     bDelete.isEnabled = false
-                    bOpenWith.visibility = View.INVISIBLE
                 } else {
                     bCopy.isEnabled = true
                     bCut.isEnabled = true
                     bDelete.isEnabled = true
-                    if(FileManager.canOpenWith())
-                        bOpenWith.visibility = View.VISIBLE
-                    else
-                        bOpenWith.visibility = View.INVISIBLE
-
-
                 }
             }
         }
