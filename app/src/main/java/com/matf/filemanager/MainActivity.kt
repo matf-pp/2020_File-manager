@@ -95,7 +95,7 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
                 R.id.menu_pictures -> Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
                 else -> Environment.getExternalStorageDirectory()
             }
-            FileManager.goTo(FileEntry(directory, false))
+            FileManager.goTo(directory)
             drawerLayout.closeDrawers()
             false
         }
