@@ -5,7 +5,7 @@ import com.matf.filemanager.versions.StateSaver
 import java.io.*
 import java.util.*
 
-class TextEditor : StateSaver<String> {
+class TextEditor : StateSaver<StringEntry> {
     private var upToDate: Boolean = false
     private var filepath: String = ""
 
@@ -76,11 +76,11 @@ class TextEditor : StateSaver<String> {
         Log.d("REFRESH FILE", "AFTER IF")
         val content = readAllFromFile()
         Log.d("REFRESH FILE", "AFTER READALLFROMFILE")
-        if (content == getCurrentInstance()) {
+        if (content == getCurrentInstance()?.content) {
             return false
         }
         Log.d("REFRESH FILE", "BEFORE GOTO")
-        goTo(content)
+        goTo(StringEntry(content, 0))
         Log.d("CONTENT: ", content)
         Log.d("REFRESH FILE", "AFTER GOTO, read: "  + getCurrentInstance())
         upToDate = true
@@ -93,7 +93,7 @@ class TextEditor : StateSaver<String> {
         return try {
             writer = FileWriter(filepath)
             Log.d("FROM SAVECHANGES", "CURRENINSTANCE: " + getCurrentInstance())
-            writer.write(getCurrentInstance())
+            writer.write(getCurrentInstance()?.content)
 
             closeWriter(writer)
             upToDate = true
@@ -104,7 +104,7 @@ class TextEditor : StateSaver<String> {
         }
     }
 
-    override fun goTo(newElement: String): Boolean {
+    override fun goTo(newElement: StringEntry): Boolean {
         upToDate = false
         return super.goTo(newElement)
     }
