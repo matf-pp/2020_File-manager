@@ -12,30 +12,45 @@ import android.widget.Toast
 import com.matf.filemanager.R
 
 import com.matf.filemanager.util.SaveStatus
+import com.matf.filemanager.util.StringEntry
 import com.matf.filemanager.util.TextEditor
 import kotlin.math.abs
 
 class TextFileActivity : AppCompatActivity() {
 
-    var textEditor: TextEditor? = null;
+    private lateinit var textEditor: TextEditor
+
+    private lateinit var etFile: EditText
+    private lateinit var tvTitle: TextView
+    private lateinit var btnUndo: Button
+    private lateinit var btnRedo: Button
+    private lateinit var btnSave : Button
+    private var cursorPosition: Int = 0
+
+    private fun forceSync(){
+        val currText: String = etFile.text.toString()
+        if(textEditor.getCurrentInstance()?.content != currText){
+            textEditor.goTo(StringEntry(currText, etFile.selectionStart))
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_text_file)
 
-        val titletv = findViewById<TextView>(R.id.titletv)
-        val fileet = findViewById<EditText>(R.id.fileet)
-        val btnUndo = findViewById<Button>(R.id.undobtn)
-        val btnRedo = findViewById<Button>(R.id.redobtn)
-        val btnSave = findViewById<Button>(R.id.savebtn)
+        tvTitle = findViewById(R.id.titletv)
+        etFile = findViewById(R.id.fileet)
+        btnUndo = findViewById(R.id.undobtn)
+        btnRedo = findViewById(R.id.redobtn)
+        btnSave = findViewById(R.id.savebtn)
 
         val filePath = intent.getStringExtra("file_path")
-        titletv.text = "EDITING FILE: " + filePath
-
+        tvTitle.text = "EDITING FILE: " + filePath
         textEditor = TextEditor(filePath)
-        fileet.setText(textEditor!!.getCurrentInstance())
 
-        fileet.addTextChangedListener(object : TextWatcher {
+        etFile.setText(textEditor.getCurrentInstance()?.content)
+
+        etFile.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
 
             }
@@ -45,48 +60,36 @@ class TextFileActivity : AppCompatActivity() {
             }
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                val oldText: String = textEditor!!.getCurrentInstance().orEmpty()
-                val newText: String = p0.toString()
+                val oldText: String = textEditor.getCurrentInstance()?.content.orEmpty()
+                val newText: String = etFile.text.toString()
 
                 if(abs(newText.length - oldText.length) > 5){
                     Log.d("TEXT-CHANGED", "SIGNIFICANT CHANGE DETECTED")
-                    textEditor!!.goTo(newText)
+                    textEditor.goTo(StringEntry(newText, etFile.selectionStart))
                 }
             }
         })
 
         btnUndo.setOnClickListener {
-
-            if(textEditor!!.goBack()){
-                fileet.setText(textEditor!!.getCurrentInstance())
+            forceSync()
+            if(textEditor.goBack()){
+                etFile.setText(textEditor.getCurrentInstance()?.content)
+                etFile.setSelection(textEditor.getCurrentInstance()!!.cursorPosition)
             }
         }
 
         btnRedo.setOnClickListener{
-            if(textEditor!!.goForward()){
-                fileet.setText(textEditor!!.getCurrentInstance())
+            forceSync()
+            if(textEditor.goForward()){
+                etFile.setText(textEditor.getCurrentInstance()?.content)
+                etFile.setSelection(textEditor.getCurrentInstance()!!.cursorPosition)
             }
         }
 
         btnSave.setOnClickListener {
-            val currText: String = fileet.text.toString()
-            if(textEditor!!.getCurrentInstance() != currText){
-                textEditor!!.goTo(currText)
-
-            }
-            Log.d("BTNSAVEONCLICK", "CURRENTINSTANCE: " + textEditor!!.getCurrentInstance())
-            val ss: SaveStatus = textEditor!!.saveChanges()
+            forceSync()
+            val ss: SaveStatus = textEditor.saveChanges()
             Toast.makeText(this, ss.toString(), Toast.LENGTH_LONG).show()
         }
-
-
-
-
-
-
-
-
-
-
     }
 }
