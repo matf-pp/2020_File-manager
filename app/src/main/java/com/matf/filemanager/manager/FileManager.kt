@@ -1,57 +1,78 @@
 package com.matf.filemanager.manager
 
-import android.util.Log
+import com.matf.filemanager.util.ClipboardMode
 import com.matf.filemanager.versions.StateSaver
 import com.matf.filemanager.util.FileManagerChangeListener
 import com.matf.filemanager.util.MenuMode
+import java.io.File
 
 object FileManager {
 
-    private var stateSaver: StateSaver<FileEntry> = StateSaver()
+    private var history: StateSaver<File> = StateSaver()
+
+    val currentDirectory: File?
+        get() = history.getCurrentInstance()
     var entries: ArrayList<FileEntry> = ArrayList()
+        private set
+
     var menuMode: MenuMode = MenuMode.OPEN
+        private set
+    var clipboardMode: ClipboardMode = ClipboardMode.NONE
+        private set
+    var clipboard: ArrayList<File> = ArrayList()
+        private set
 
-    private var listeners: ArrayList<FileManagerChangeListener> = ArrayList()
+    private var selectionSize : Int = 0
 
-    fun goTo(newElement: FileEntry): Boolean {
-        if(newElement.file.isDirectory) {
-            if(stateSaver.goTo(newElement)) {
-                refresh()
-                return true
-            } else {
-                //OVO NE BI TREBALO DA MOZE DA SE DESI UOPSTE
-                return false
-            }
-        } else {
-            Log.d("TODO", "OPEN THIS FILE")
-            // TODO Pozvati onRequestFileOpen
+    private var listener: FileManagerChangeListener? = null
+
+    private fun listFileEntries(file: File?): List<FileEntry> {
+        if(file == null)
+            return emptyList()
+        return file.listFiles()
+            .sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name })
+            .map { f -> FileEntry(f) }
+    }
+
+    fun goTo(file: File): Boolean {
+        if(!file.exists())
             return false
+
+        if(file.isDirectory) {
+            history.goTo(file)
+            refresh()
+        } else {
+            return requestFileOpen(file)
         }
+        return true
     }
 
     fun goBack(): Boolean {
-        if(stateSaver.goBack()) {
-            refresh();
+        if(history.goBack()) {
+            refresh()
             return true
         }
         return false
     }
 
     fun goForward(): Boolean {
-        if(stateSaver.goForward()) {
-            refresh();
+        if(history.goForward()) {
+            refresh()
             return true
         }
         return false
     }
 
+    fun canGoBack() : Boolean = history.canGoBack()
+
+    fun canGoForward() : Boolean = history.canGoForward()
+
     fun refresh() {
-        // TODO Dont mutate entries in stateSaver
         entries.clear()
-        entries.addAll(stateSaver.getCurrentInstance()?.listFileEntries().orEmpty())
+        entries.addAll(listFileEntries(history.getCurrentInstance()))
 
         if(menuMode == MenuMode.SELECT) toggleSelectionMode()
-        notifyEntryChanged()
+        notifyEntriesChanged()
     }
 
     fun toggleSelectionMode(){
@@ -61,33 +82,133 @@ object FileManager {
             }
             MenuMode.SELECT -> {
                 menuMode = MenuMode.OPEN
-                for (f in entries)
+                for (f in entries){
                     f.selected = false
+                    selectionSize = 0
+                }
+
+
             }
         }
         notifySelectionModeChanged()
-        notifyEntryChanged()
+        notifyEntriesChanged()
     }
 
     fun toggleSelectionAt(i: Int){
+        if(entries[i].selected){
+            selectionSize--
+        }else{
+            selectionSize++
+        }
         entries[i].selected = !entries[i].selected
-        notifyEntryChanged()
+        notifyEntriesChanged()
+        notifySelectionModeChanged()
     }
 
-    fun addEntryChangeListner(listener: FileManagerChangeListener) {
-        listeners.add(listener)
+    fun moveToClipboard(file: File, mode: ClipboardMode) {
+        clipboardMode = mode
+        clipboard.clear()
+        clipboard.add(file)
+        notifyClipboardChanged()
     }
 
-    private fun notifyEntryChanged() {
-        for(listener in listeners)
-            listener.onEntriesChange()
+    fun moveSelectedToClipboard(mode: ClipboardMode) {
+        clipboardMode = mode
+        when(menuMode){
+            MenuMode.SELECT -> {
+                clipboard.clear()
+                clipboard.addAll(entries.filter { e -> e.selected }.map { e -> e.file })
+            }
+            MenuMode.OPEN -> {
+                // Nismo u modu za selekciju, ispraznicemo clipboard
+                // Nikada ne bi trebalo da dodjemo ovde
+                clipboard.clear()
+            }
+
+        }
+        notifyClipboardChanged()
+    }
+
+    fun selectionEmpty(): Boolean {
+        return entries.none { e -> e.selected }
+    }
+
+    fun canOpenWith(file: File) : Boolean {
+        return !file.isDirectory
+    }
+
+    private fun copy() {
+        listener?.copyFile(
+            clipboard.filter { f -> currentDirectory?.startsWith(f) == false },
+            currentDirectory as File
+        )
+    }
+
+    private fun cut() {
+        listener?.moveFile(
+            clipboard
+                .filter { f -> currentDirectory?.startsWith(f) == false }
+                .filter { f -> currentDirectory?.resolve(f.name)?.exists() == false },
+            currentDirectory as File
+        )
+    }
+
+    fun delete(file: File) {
+        listener?.deleteFile(
+            listOf(file)
+        )
+    }
+
+    fun deleteSelected() {
+        listener?.deleteFile(
+            entries.filter { e -> e.selected && e.file.exists() }.map {e -> e.file}
+        )
+    }
+
+    fun paste() {
+        when(clipboardMode) {
+            ClipboardMode.NONE -> {
+                // Nikada ne bi trebalo da dodjemo ovde
+            }
+            ClipboardMode.COPY -> {
+                copy()
+
+                clipboard.clear()
+                clipboardMode = ClipboardMode.NONE
+                notifyClipboardChanged()
+            }
+            ClipboardMode.CUT -> {
+                cut()
+
+                clipboard.clear()
+                clipboardMode = ClipboardMode.NONE
+                notifyClipboardChanged()
+            }
+        }
+    }
+
+    fun setListener(listener: FileManagerChangeListener) {
+        this.listener = listener
+    }
+
+    private fun notifyEntriesChanged() {
+        listener?.onEntriesChange()
     }
 
     private fun notifySelectionModeChanged() {
-        for(listener in listeners)
-            listener.onSelectionModeChange(menuMode)
+        listener?.onSelectionModeChange(menuMode)
     }
 
-    // TODO canGoBack/Forward za enable dugmica
+    private fun notifyClipboardChanged() {
+        listener?.onClipboardChange(clipboardMode)
+    }
+
+    private fun requestFileOpen(file: File): Boolean {
+        return listener?.onRequestFileOpen(file) == true
+    }
+
+    fun requestFileOpenWith(file: File): Boolean {
+        return listener?.onRequestFileOpenWith(file) == true
+    }
 
 }

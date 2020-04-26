@@ -55,4 +55,7 @@ open class StateSaver<T> : Versionable<T>{
         }
         return sb.toString()
     }
+
+    fun canGoBack() : Boolean = history.size > 0 && currentInstanceIndex > 0
+    fun canGoForward() : Boolean = history.size > 0 && currentInstanceIndex < history.size - 1
 }
