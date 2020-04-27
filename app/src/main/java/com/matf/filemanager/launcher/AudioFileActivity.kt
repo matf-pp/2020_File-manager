@@ -10,6 +10,7 @@ import android.os.Message
 import android.view.View
 import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toFile
 import com.matf.filemanager.R
 import kotlinx.android.synthetic.main.activity_audio_file.*
 
@@ -24,7 +25,7 @@ class AudioFileActivity : AppCompatActivity() {
         setContentView(R.layout.activity_audio_file)
 
         val myUri: Uri = Uri.parse(intent.getStringExtra("audioUri"))
-
+        audioTitle.text = myUri.lastPathSegment
         mp = MediaPlayer.create(this, myUri)
         mp.isLooping = false
         mp.setVolume(0.5f, 0.5f)
