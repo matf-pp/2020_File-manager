@@ -25,5 +25,9 @@
     <string name="action_paste">Paste</string>
     <string name="action_open_with">Open With</string>
 
+    <string name="action_undo">Undo</string>
+    <string name="action_redo">Redo</string>
+    <string name="action_save">Save</string>
+
     <string name="text_size">size: %1$s</string>
 </resources>

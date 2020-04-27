@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
         when(FileManager.menuMode) {
             MenuMode.OPEN -> {
                 if (!FileManager.goBack()) {
-                    Toast.makeText(this, "greska", Toast.LENGTH_SHORT).show()
+                    finish()
                 }
             }
             MenuMode.SELECT -> {

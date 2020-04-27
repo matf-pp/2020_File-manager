@@ -14,6 +14,7 @@ import com.matf.filemanager.R
 import com.matf.filemanager.util.SaveStatus
 import com.matf.filemanager.util.StringEntry
 import com.matf.filemanager.util.TextEditor
+import java.io.File
 import kotlin.math.abs
 
 class TextFileActivity : AppCompatActivity() {
@@ -45,7 +46,7 @@ class TextFileActivity : AppCompatActivity() {
         btnSave = findViewById(R.id.savebtn)
 
         val filePath = intent.getStringExtra("file_path")
-        tvTitle.text = "EDITING FILE: " + filePath
+        tvTitle.text = File(filePath).name
         textEditor = TextEditor(filePath)
 
         etFile.setText(textEditor.getCurrentInstance()?.content)

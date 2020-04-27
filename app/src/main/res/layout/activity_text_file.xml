@@ -1,52 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".launcher.TextFileActivity"
     android:orientation="vertical">
+
     <TextView
         android:id="@+id/titletv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        />
-
-    <EditText
-        android:id="@+id/fileet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/text_file_menu"
-        android:layout_below="@id/titletv"
-        android:inputType="textMultiLine"
-        android:gravity="top"/>
+        android:background="@color/colorMenu"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:textSize="20sp"
+        android:textAlignment="center"
+        />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:background="@color/colorMenu"
+        app:layout_constraintTop_toBottomOf="@id/titletv"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
         android:id="@+id/text_file_menu"
-        android:fitsSystemWindows="true"
-        android:layout_alignParentBottom="true">
+        android:fitsSystemWindows="true">
 
         <Button
             android:id="@+id/undobtn"
+            style="?android:attr/borderlessButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Undo" />
+            android:text="@string/action_undo" />
 
         <Button
             android:id="@+id/redobtn"
+            style="?android:attr/borderlessButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Redo" />
+            android:text="@string/action_redo" />
 
         <Button
             android:id="@+id/savebtn"
+            style="?android:attr/borderlessButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Save" />
+            android:text="@string/action_save" />
     </LinearLayout>
 
-</RelativeLayout>
+    <EditText
+        android:id="@+id/fileet"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/text_file_menu"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:inputType="textMultiLine"
+        android:gravity="top"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
