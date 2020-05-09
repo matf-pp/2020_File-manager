@@ -27,10 +27,10 @@ class FileEntryAdapter(context: Context) : BaseAdapter() {
             when {
                 FileManager.entries[position].file.extension.matches(Regex("^(jpg|jpeg|png|JPG)$")) -> imgIcon.setImageResource(R.drawable.image)
                 FileManager.entries[position].file.extension.matches(Regex("^(mp4|mkv|webm)$")) -> imgIcon.setImageResource(R.drawable.music)
-                FileManager.entries[position].file.extension.matches(Regex("^(mp3)$")) -> imgIcon.setImageResource(R.drawable.audio1)
+                FileManager.entries[position].file.extension.matches(Regex("^(mp3|aac)$")) -> imgIcon.setImageResource(R.drawable.audio1)
                 FileManager.entries[position].file.extension.matches(Regex("^(html)$")) -> imgIcon.setImageResource(R.drawable.html)
                 FileManager.entries[position].file.extension.matches(Regex("^(pdf)$")) -> imgIcon.setImageResource(R.drawable.pdf)
-                FileManager.entries[position].file.extension.matches(Regex("^(zip|rar|7z)$")) -> imgIcon.setImageResource(R.drawable.zip)
+                FileManager.entries[position].file.extension.matches(Regex("^(zip|rar|7z|iso)$")) -> imgIcon.setImageResource(R.drawable.zip)
                 else -> imgIcon.setImageResource(R.drawable.text)
             }
         } else {
