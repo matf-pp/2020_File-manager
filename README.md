@@ -7,7 +7,7 @@ Ovaj projekat predstavlja implementaciju menadžera fajlova za operativni sistem
 Korišćen je programski jezik Kotlin u Android Studio okruženju. Za jedan deo dizajna korisničkog interfejsa upotrebili smo Google Material biblioteku.
 
 ### Pokretanje
-Projekat je pravljen za Android operativni sistem verzije 4.4 i naviše. Dovoljno je preuzeti .apk fajl i instalirati ga.
+Projekat je pravljen za Android operativni sistem verzije 4.4 i naviše. Preuzeti filemanager.apk fajl iz foldera APK_FILE i instalirati ga.
 
 ### Autori
 1. Vuksanović Vladimir,
