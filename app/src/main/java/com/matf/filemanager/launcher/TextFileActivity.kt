@@ -17,6 +17,7 @@ import com.matf.filemanager.util.TextEditor
 import java.io.File
 import kotlin.math.abs
 
+// Klasa koja implementira otvaranje tekstualnih fajlova
 class TextFileActivity : AppCompatActivity() {
 
     private lateinit var textEditor: TextEditor
@@ -52,13 +53,9 @@ class TextFileActivity : AppCompatActivity() {
         etFile.setText(textEditor.getCurrentInstance()?.content)
 
         etFile.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(p0: Editable?) {
+            override fun afterTextChanged(p0: Editable?) {}
 
-            }
-
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-
-            }
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 val oldText: String = textEditor.getCurrentInstance()?.content.orEmpty()
@@ -71,6 +68,7 @@ class TextFileActivity : AppCompatActivity() {
             }
         })
 
+        // Dugme za vracanje sadrzaja korak u nazad
         btnUndo.setOnClickListener {
             forceSync()
             if(textEditor.goBack()){
@@ -79,6 +77,7 @@ class TextFileActivity : AppCompatActivity() {
             }
         }
 
+        // Dugme za pomeranje sadrzaja u napred
         btnRedo.setOnClickListener{
             forceSync()
             if(textEditor.goForward()){
@@ -87,6 +86,7 @@ class TextFileActivity : AppCompatActivity() {
             }
         }
 
+        // Dugme za cuvanje sadrzaja
         btnSave.setOnClickListener {
             forceSync()
             val ss: SaveStatus = textEditor.saveChanges()

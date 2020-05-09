@@ -9,6 +9,7 @@ import android.widget.TextView
 import com.matf.filemanager.R
 import java.io.File
 
+// Klasa koja implementira otvaranje slika
 class ImageFileActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,6 +24,7 @@ class ImageFileActivity : AppCompatActivity() {
 
         imageTextView.text = f.name
 
+        // Otvaranje slike
         if(f.exists()){
             val myBitmap: Bitmap = BitmapFactory.decodeFile(f.absolutePath)
             imageView.setImageBitmap(myBitmap)

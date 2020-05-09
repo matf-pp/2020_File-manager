@@ -101,6 +101,7 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
             false
         }
 
+        // Dark mode
         sSystemDarkMode = findViewById(R.id.cbSystemDarkMode)
         sDarkMode = findViewById(R.id.tDarkMode)
 
@@ -267,6 +268,7 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
         }
     }
 
+    // Otvaranje fajlova nasim programima
     override fun onRequestFileOpen(file: File): Boolean {
         val intent: Intent? = when(getTypeFromExtension(file.extension)) {
             FileTypes.TEXT, FileTypes.HTML -> Intent(this, TextFileActivity::class.java)
@@ -284,6 +286,7 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
         return false
     }
 
+    // Otvaranje fajlova drugim programima na uredjaju
     override fun onRequestFileOpenWith(file: File): Boolean {
         val uri = FileProvider.getUriForFile(this, "android.matf", file)
         val intent = Intent(Intent.ACTION_VIEW)

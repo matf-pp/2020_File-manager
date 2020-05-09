@@ -9,6 +9,7 @@ import androidx.core.app.JobIntentService
 import com.matf.filemanager.util.FileActions
 import java.io.File
 
+// Operacije copy, cut, delete, move su implementirane tako da se izvrsavaju konkurentno
 
 class FileActionService : JobIntentService() {
 

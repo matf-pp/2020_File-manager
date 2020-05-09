@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.matf.filemanager.R
 import kotlinx.android.synthetic.main.activity_video_file.*
 
+// Klasa koja implementira otvaranje video zapisa
 class VideoFileActivity : AppCompatActivity() {
 
     var continueFrom = 0
@@ -38,7 +39,6 @@ class VideoFileActivity : AppCompatActivity() {
         videoView.setMediaController(mediaController)
         videoView.keepScreenOn = true
 
-//        videoView.setOnCompletionListener {}
         videoView.setOnErrorListener { mediaPlayer, i, i2 ->
             Toast.makeText(applicationContext, "Error playing media", Toast.LENGTH_LONG).show()
             finish()

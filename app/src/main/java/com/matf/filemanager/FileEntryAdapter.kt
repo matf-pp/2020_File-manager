@@ -16,21 +16,19 @@ class FileEntryAdapter(context: Context) : BaseAdapter() {
 
     @SuppressLint("ViewHolder")
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        // Make a new view for the entry
+
         val view: View = inflater.inflate(R.layout.file_entry, parent, false)
         val entry = FileManager.entries[position]
 
-        // Get entry views
         val imgIcon: ImageView = view.findViewById(R.id.imgIcon)
         val tvTitle: TextView = view.findViewById(R.id.fileTitletv)
         val tvSize: TextView = view.findViewById(R.id.fileSizetv)
         val bProperties: ImageView = view.findViewById(R.id.bProperties)
         val cbSelected: CheckBox = view.findViewById(R.id.cbSelected)
 
-        // Set entry name
         tvTitle.text = entry.file.name
 
-        // Set entry icon
+        // Podesavanje ikonice fajla
         if(!entry.file.isDirectory) {
 
             when(getTypeFromExtension(entry.file.extension)) {
@@ -50,13 +48,13 @@ class FileEntryAdapter(context: Context) : BaseAdapter() {
                 imgIcon.setImageResource(R.drawable.folder_filled)
         }
 
-        // Set entry size
+        // Postavljanje prostora koji zauzima
         if (!entry.file.isDirectory)
             tvSize.text = view.context.getString(R.string.text_size, getSizeString(FileManager.entries[position].file))
         else
             tvSize.text = ""
 
-        // Initialize entry menu (properties button and selected checkbox)
+        // Inicijalizacija
         when(FileManager.menuMode) {
             MenuMode.SELECT -> {
                 bProperties.visibility = ImageButton.GONE
@@ -84,7 +82,7 @@ class FileEntryAdapter(context: Context) : BaseAdapter() {
             }
         }
 
-        // Mark entry if selected
+        // Markiranje selektovanih entry-ja
         if (entry.selected) {
             cbSelected.isChecked = true
             view.setBackgroundColor(view.resources.getColor(R.color.colorHighlight))
@@ -93,7 +91,7 @@ class FileEntryAdapter(context: Context) : BaseAdapter() {
             view.setBackgroundColor(Color.TRANSPARENT)
         }
 
-        // Event handlers
+        // Handler-i dogadjaja
         view.setOnClickListener {
             view.setBackgroundColor(view.resources.getColor(R.color.colorHighlight))
             view.animate().setDuration(20).withEndAction {

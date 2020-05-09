@@ -5,6 +5,7 @@ import com.matf.filemanager.versions.StateSaver
 import java.io.*
 import java.util.*
 
+// Klasa koja implementira tekst editor
 class TextEditor(private var filepath: String) : StateSaver<StringEntry>() {
     private var upToDate: Boolean = false
 

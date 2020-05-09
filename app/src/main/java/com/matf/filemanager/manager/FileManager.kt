@@ -6,9 +6,11 @@ import com.matf.filemanager.util.FileManagerChangeListener
 import com.matf.filemanager.util.MenuMode
 import java.io.File
 
+// Singleton klasa
+
 object FileManager {
 
-    private var history: StateSaver<File> = StateSaver()
+    private var history: StateSaver<File> = StateSaver() // Niz fajlova za podrzavanje operacija back i forward
 
     val currentDirectory: File?
         get() = history.getCurrentInstance()
@@ -26,6 +28,7 @@ object FileManager {
 
     private var listener: FileManagerChangeListener? = null
 
+    // Izlistavanje svih foldera i fajlova
     private fun listFileEntries(file: File?): List<FileEntry> {
         if(file == null)
             return emptyList()

@@ -14,6 +14,7 @@ import androidx.core.net.toFile
 import com.matf.filemanager.R
 import kotlinx.android.synthetic.main.activity_audio_file.*
 
+// Klasa koja implementira otvaranje audio fajlova
 
 class AudioFileActivity : AppCompatActivity() {
 
@@ -31,6 +32,7 @@ class AudioFileActivity : AppCompatActivity() {
         mp.setVolume(0.5f, 0.5f)
         totalTime = mp.duration
 
+        // Podesavanje jacine zvuka
         volumeBar.setOnSeekBarChangeListener(
             object : SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(seekbar: SeekBar?, progress: Int, fromUser: Boolean) {
@@ -97,6 +99,7 @@ class AudioFileActivity : AppCompatActivity() {
         return timeLabel
     }
 
+    // Akcija koja se desava na klik play dugmeta
     fun playBtnClick(v: View) {
         if(mp.isPlaying){
             // Stop
