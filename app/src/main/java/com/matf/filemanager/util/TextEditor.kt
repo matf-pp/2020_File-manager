@@ -5,15 +5,12 @@ import com.matf.filemanager.versions.StateSaver
 import java.io.*
 import java.util.*
 
-class TextEditor : StateSaver<StringEntry> {
+class TextEditor(private var filepath: String) : StateSaver<StringEntry>() {
     private var upToDate: Boolean = false
-    private var filepath: String = ""
 
-    constructor(filepath: String) : super() {
+    init {
         Log.d("INSIDE", "CONSTRUCTOR")
         upToDate = false
-        this.filepath = filepath
-
         refreshFile()
     }
 
@@ -71,18 +68,17 @@ class TextEditor : StateSaver<StringEntry> {
     }
 
     private fun refreshFile(): Boolean {
-        Log.d("REFRESH FILE", "BEFORE IF")
+
         if (upToDate) return false
-        Log.d("REFRESH FILE", "AFTER IF")
+
         val content = readAllFromFile()
-        Log.d("REFRESH FILE", "AFTER READALLFROMFILE")
+
         if (content == getCurrentInstance()?.content) {
             return false
         }
-        Log.d("REFRESH FILE", "BEFORE GOTO")
+
         goTo(StringEntry(content, 0))
-        Log.d("CONTENT: ", content)
-        Log.d("REFRESH FILE", "AFTER GOTO, read: "  + getCurrentInstance())
+
         upToDate = true
         return true
     }
@@ -92,14 +88,14 @@ class TextEditor : StateSaver<StringEntry> {
         val writer: FileWriter
         return try {
             writer = FileWriter(filepath)
-            Log.d("FROM SAVECHANGES", "CURRENINSTANCE: " + getCurrentInstance())
+
             writer.write(getCurrentInstance()?.content)
 
             closeWriter(writer)
             upToDate = true
             SaveStatus.FILESAVED
         } catch (e: IOException) {
-            Log.d("ERROR", "new FileWriter()")
+
             SaveStatus.ERRORSAVING
         }
     }

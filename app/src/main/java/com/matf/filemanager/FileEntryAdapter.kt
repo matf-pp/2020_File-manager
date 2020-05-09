@@ -32,6 +32,7 @@ class FileEntryAdapter(context: Context) : BaseAdapter() {
 
         // Set entry icon
         if(!entry.file.isDirectory) {
+
             when(getTypeFromExtension(entry.file.extension)) {
                 FileTypes.IMAGE -> imgIcon.setImageResource(R.drawable.file_image)
                 FileTypes.AUDIO -> imgIcon.setImageResource(R.drawable.audio1)
@@ -42,6 +43,7 @@ class FileEntryAdapter(context: Context) : BaseAdapter() {
                 else -> imgIcon.setImageResource(R.drawable.file_text)
             }
         } else {
+
             if(entry.file.listFiles().isEmpty())
                 imgIcon.setImageResource(R.drawable.folder_empty)
             else
