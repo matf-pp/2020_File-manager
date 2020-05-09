@@ -34,7 +34,11 @@ class FileEntryAdapter(context: Context) : BaseAdapter() {
         if(!entry.file.isDirectory) {
             when(getTypeFromExtension(entry.file.extension)) {
                 FileTypes.IMAGE -> imgIcon.setImageResource(R.drawable.file_image)
-                FileTypes.AUDIO, FileTypes.VIDEO -> imgIcon.setImageResource(R.drawable.file_media)
+                FileTypes.AUDIO -> imgIcon.setImageResource(R.drawable.audio1)
+                FileTypes.VIDEO -> imgIcon.setImageResource(R.drawable.file_media)
+                FileTypes.HTML -> imgIcon.setImageResource(R.drawable.html)
+                FileTypes.PDF -> imgIcon.setImageResource(R.drawable.pdf)
+                FileTypes.ZIP -> imgIcon.setImageResource(R.drawable.zip)
                 else -> imgIcon.setImageResource(R.drawable.file_text)
             }
         } else {

@@ -5,5 +5,8 @@ enum class FileTypes {
     IMAGE,
     VIDEO,
     AUDIO,
+    HTML,
+    PDF,
+    ZIP,
     UNKNOWN
 }

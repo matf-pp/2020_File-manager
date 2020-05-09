@@ -22,6 +22,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
+import com.matf.filemanager.launcher.AudioFileActivity
 import com.matf.filemanager.launcher.ImageFileActivity
 import com.matf.filemanager.launcher.TextFileActivity
 import com.matf.filemanager.launcher.VideoFileActivity
@@ -268,9 +269,11 @@ class MainActivity : AppCompatActivity(), FileManagerChangeListener {
 
     override fun onRequestFileOpen(file: File): Boolean {
         val intent: Intent? = when(getTypeFromExtension(file.extension)) {
-            FileTypes.TEXT -> Intent(this, TextFileActivity::class.java)
+            FileTypes.TEXT, FileTypes.HTML -> Intent(this, TextFileActivity::class.java)
             FileTypes.IMAGE -> Intent(this, ImageFileActivity::class.java)
             FileTypes.VIDEO -> Intent(this, VideoFileActivity::class.java)
+            FileTypes.AUDIO -> Intent(this, AudioFileActivity::class.java)
+
             else -> null
         }
         if(intent != null) {

@@ -12,6 +12,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".launcher.AudioFileActivity" />
         <activity
             android:name=".launcher.TextFileActivity"
             android:windowSoftInputMode="adjustResize">
@@ -29,7 +30,7 @@
         <service
             android:name=".service.FileActionService"
             android:exported="false"
-            android:permission="android.permission.BIND_JOB_SERVICE"/>
+            android:permission="android.permission.BIND_JOB_SERVICE" />
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="android.matf"
