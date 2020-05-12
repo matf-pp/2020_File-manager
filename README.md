@@ -1,5 +1,7 @@
 # Android File Manager
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/60047fde3b904499a8ea49554edd35cb)](https://app.codacy.com/gh/matf-pp/2020_File-manager?utm_source=github.com&utm_medium=referral&utm_content=matf-pp/2020_File-manager&utm_campaign=Badge_Grade_Dashboard)
+
 ### Kratak opis
 Ovaj projekat predstavlja implementaciju menadžera fajlova za operativni sistem Android.
 
