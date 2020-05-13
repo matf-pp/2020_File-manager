@@ -7,9 +7,12 @@ import android.os.Bundle
 import android.widget.ImageView
 import android.widget.TextView
 import com.matf.filemanager.R
+import com.matf.filemanager.util.References
 import java.io.File
 
-// Klasa koja implementira otvaranje slika
+/**
+ * Klasa koja implementira otvaranje slika
+ */
 class ImageFileActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,8 +22,8 @@ class ImageFileActivity : AppCompatActivity() {
         val imageTextView = findViewById<TextView>(R.id.imageTitletv)
         val imageView = findViewById<ImageView>(R.id.imageView)
 
-        val filePath = intent.getStringExtra("file_path")
-        val f: File = File(filePath)
+        val filePath = intent.getStringExtra(References.intentFilePath)
+        val f = File(filePath)
 
         imageTextView.text = f.name
 

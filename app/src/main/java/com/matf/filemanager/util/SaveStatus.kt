@@ -1,14 +1,14 @@
 package com.matf.filemanager.util
 
 enum class SaveStatus {
-    FILESAVED, ERRORSAVING, FILENOTCHANGED;
+    SAVED, ERROR_SAVING, NOT_CHANGED;
 
     override fun toString(): String {
         return when {
-            this == FILESAVED -> {
+            this == SAVED -> {
                 "File saved!"
             }
-            this == ERRORSAVING -> {
+            this == ERROR_SAVING -> {
                 "An error has occurred!"
             }
             else -> {

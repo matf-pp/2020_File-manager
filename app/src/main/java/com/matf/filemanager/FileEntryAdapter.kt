@@ -29,24 +29,7 @@ class FileEntryAdapter(context: Context) : BaseAdapter() {
         tvTitle.text = entry.file.name
 
         // Podesavanje ikonice fajla
-        if(!entry.file.isDirectory) {
-
-            when(getTypeFromExtension(entry.file.extension)) {
-                FileTypes.IMAGE -> imgIcon.setImageResource(R.drawable.file_image)
-                FileTypes.AUDIO -> imgIcon.setImageResource(R.drawable.audio1)
-                FileTypes.VIDEO -> imgIcon.setImageResource(R.drawable.file_media)
-                FileTypes.HTML -> imgIcon.setImageResource(R.drawable.html)
-                FileTypes.PDF -> imgIcon.setImageResource(R.drawable.pdf)
-                FileTypes.ZIP -> imgIcon.setImageResource(R.drawable.zip)
-                else -> imgIcon.setImageResource(R.drawable.file_text)
-            }
-        } else {
-
-            if(entry.file.listFiles().isEmpty())
-                imgIcon.setImageResource(R.drawable.folder_empty)
-            else
-                imgIcon.setImageResource(R.drawable.folder_filled)
-        }
+        imgIcon.setImageResource(getIconForFile(entry.file))
 
         // Postavljanje prostora koji zauzima
         if (!entry.file.isDirectory)

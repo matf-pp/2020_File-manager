@@ -7,10 +7,16 @@ import android.os.Bundle
 import android.os.ResultReceiver
 import androidx.core.app.JobIntentService
 import com.matf.filemanager.util.FileActions
+import com.matf.filemanager.util.References
 import java.io.File
 
-// Operacije copy, cut, delete, move su implementirane tako da se izvrsavaju konkurentno
-
+/**
+ * Servis za izvrsavanje akcija nad fajlom
+ *
+ * Akcije ukljucuju kopiranje, premestanje i brisanje fajlova
+ * Posto te akcije mogu da traju dosta vremena koristimo servis kako bi se one
+ * izvrsavale u pozadini cak i ako korisnik zatvori aplikaciju
+ */
 class FileActionService : JobIntentService() {
 
     companion object {
@@ -20,36 +26,36 @@ class FileActionService : JobIntentService() {
     }
 
     override fun onHandleWork(intent: Intent) {
-        val rec: ResultReceiver = intent.getParcelableExtra("receiver")
-        val action = intent.getSerializableExtra("action")
+        val rec: ResultReceiver = intent.getParcelableExtra(References.intentReceiver)
+        val action = intent.getSerializableExtra(References.intentAction)
 
         when(action) {
             FileActions.COPY -> {
-                val targets = intent.getStringArrayExtra("targets").map { t -> File(t) }
-                val dest = File(intent.getStringExtra("dest"))
+                val targets = intent.getStringArrayExtra(References.intentTargets).map { t -> File(t) }
+                val dest = File(intent.getStringExtra(References.intentDest))
 
                 targets.forEach { target ->
-                    var new_name = target.nameWithoutExtension
+                    var newName = target.nameWithoutExtension
                     //TODO Limit this by hardcoded value
                     while(true) {
-                        if(dest.resolve(new_name+"."+target.extension).exists()) {
-                            new_name += "-copy"
+                        if(dest.resolve(newName+"."+target.extension).exists()) {
+                            newName += "-copy"
                         } else {
-                            break;
+                            break
                         }
                     }
 
                     if(target.isDirectory) {
-                        target.copyRecursively(dest.resolve(new_name), false)
+                        target.copyRecursively(dest.resolve(newName), false)
                     } else {
-                        new_name += "." + target.extension
-                        target.copyTo(dest.resolve(new_name), false)
+                        newName += "." + target.extension
+                        target.copyTo(dest.resolve(newName), false)
                     }
                 }
             }
             FileActions.MOVE -> {
-                val targets = intent.getStringArrayExtra("targets").map { t -> File(t) }
-                val dest = File(intent.getStringExtra("dest"))
+                val targets = intent.getStringArrayExtra(References.intentTargets).map { t -> File(t) }
+                val dest = File(intent.getStringExtra(References.intentDest))
 
                 targets.forEach { target ->
                     if(!dest.resolve(target.name).exists())
@@ -57,7 +63,7 @@ class FileActionService : JobIntentService() {
                 }
             }
             FileActions.DELETE -> {
-                val targets = intent.getStringArrayExtra("targets").map { t -> File(t) }
+                val targets = intent.getStringArrayExtra(References.intentTargets).map { t -> File(t) }
                 targets.forEach { target ->
                     if (target.exists()) {
                         if (target.isDirectory) {
@@ -71,7 +77,7 @@ class FileActionService : JobIntentService() {
         }
 
         val bundle = Bundle()
-        bundle.putSerializable("action", action)
+        bundle.putSerializable(References.intentAction, action)
         rec.send(Activity.RESULT_OK, bundle)
     }
 

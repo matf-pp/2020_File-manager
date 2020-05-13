@@ -1,7 +1,6 @@
 package com.matf.filemanager.launcher
 
 import android.annotation.SuppressLint
-import android.content.pm.ActivityInfo
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
@@ -10,12 +9,13 @@ import android.os.Message
 import android.view.View
 import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.net.toFile
 import com.matf.filemanager.R
+import com.matf.filemanager.util.References
 import kotlinx.android.synthetic.main.activity_audio_file.*
 
-// Klasa koja implementira otvaranje audio fajlova
-
+/**
+ * Klasa koja implementira otvaranje audio fajlova
+ */
 class AudioFileActivity : AppCompatActivity() {
 
     private lateinit var mp: MediaPlayer
@@ -25,7 +25,7 @@ class AudioFileActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_audio_file)
 
-        val myUri: Uri = Uri.parse(intent.getStringExtra("file_path"))
+        val myUri: Uri = Uri.parse(intent.getStringExtra(References.intentFilePath))
         audioTitle.text = myUri.lastPathSegment
         mp = MediaPlayer.create(this, myUri)
         mp.isLooping = false
@@ -37,7 +37,7 @@ class AudioFileActivity : AppCompatActivity() {
             object : SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(seekbar: SeekBar?, progress: Int, fromUser: Boolean) {
                     if(fromUser){
-                        var volumeNum = progress / 100.0f
+                        val volumeNum = progress / 100.0f
                         mp.setVolume(volumeNum, volumeNum)
                     }
                 }
@@ -54,19 +54,21 @@ class AudioFileActivity : AppCompatActivity() {
                         mp.seekTo(progress)
                     }
                 }
-                override fun onStartTrackingTouch(p0: SeekBar?) {}
-                override fun onStopTrackingTouch(p0: SeekBar?) {}
+                override fun onStartTrackingTouch(p0: SeekBar?) { return }
+                override fun onStopTrackingTouch(p0: SeekBar?) { return }
             }
         )
 
         Thread(Runnable {
             while (mp != null){
                 try {
-                    var msg = Message()
+                    val msg = Message()
                     msg.what = mp.currentPosition
                     handler.sendMessage(msg)
                     Thread.sleep(1000)
-                } catch (e: InterruptedException){}
+                } catch (e: InterruptedException) {
+                    e.printStackTrace()
+                }
             }
         }).start()
 
@@ -75,31 +77,34 @@ class AudioFileActivity : AppCompatActivity() {
     @SuppressLint("HandlerLeak")
     var handler = object : Handler(){
         override fun handleMessage(msg: Message?) {
-            var currentPosition = msg!!.what
+            val currentPosition = msg!!.what
 
             positionBar.progress = currentPosition
 
-            var elapsedTime = createTimeLabel(currentPosition)
+            val elapsedTime = createTimeLabel(currentPosition)
             elapsedTimeLabel.text = elapsedTime
 
-            var remainingTime = createTimeLabel(totalTime - currentPosition)
+            val remainingTime = createTimeLabel(totalTime - currentPosition)
             remainingTimeLabel.text = "-$remainingTime"
         }
     }
 
-    fun createTimeLabel(time: Int): String {
-        var timeLabel = ""
-        var min = time / 1000 / 60
-        var sec = time / 1000 % 60
+    private fun createTimeLabel(time: Int): String {
+        val min = time / 1000 / 60
+        val sec = time / 1000 % 60
 
-        timeLabel = "$min:"
+        var timeLabel = "$min:"
         if(sec < 10) timeLabel += "0"
         timeLabel += sec
 
         return timeLabel
     }
 
-    // Akcija koja se desava na klik play dugmeta
+    /**
+     * Akcija koja se desava na klik play dugmeta
+     *
+     * @param v Dugme koje je pritisnuto
+     */
     fun playBtnClick(v: View) {
         if(mp.isPlaying){
             // Stop
@@ -107,7 +112,7 @@ class AudioFileActivity : AppCompatActivity() {
             playBtn.setBackgroundResource(R.drawable.play)
         }
         else{
-            // Strat
+            // Start
             mp.start()
             playBtn.setBackgroundResource(R.drawable.stop)
         }

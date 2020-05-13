@@ -6,8 +6,9 @@ import com.matf.filemanager.util.FileManagerChangeListener
 import com.matf.filemanager.util.MenuMode
 import java.io.File
 
-// Singleton klasa
-
+/**
+ * Singlton klasa zaduzena za sve operacije za navigaciju i otvaranje fajlova i foldera
+ */
 object FileManager {
 
     private var history: StateSaver<File> = StateSaver() // Niz fajlova za podrzavanje operacija back i forward

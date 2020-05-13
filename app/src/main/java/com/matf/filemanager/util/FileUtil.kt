@@ -1,5 +1,6 @@
 package com.matf.filemanager.util
 
+import com.matf.filemanager.R
 import java.io.File
 
 private val textExtensionRegex = Regex("^(txt|css|js|c|h|cpp|hpp|py|java|pl)$", RegexOption.IGNORE_CASE)
@@ -10,6 +11,12 @@ private val zipExtensionRegex = Regex("^(zip|rar|7z|iso)$", RegexOption.IGNORE_C
 private val pdfExtensionRegex = Regex("^pdf$", RegexOption.IGNORE_CASE)
 private val htmlExtensionRegex = Regex("^(html|htm)$", RegexOption.IGNORE_CASE)
 
+/**
+ * Vraca tip fajla za prosledjenu ekstenziju
+ *
+ * @param extension Ekstenzija na osnovu koje trazimo tip
+ * @return Tip fajla koji ima prosledjnu ekstenziju
+ */
 fun getTypeFromExtension(extension: String): FileTypes {
     return when {
         extension.matches(textExtensionRegex) -> FileTypes.TEXT
@@ -23,8 +30,39 @@ fun getTypeFromExtension(extension: String): FileTypes {
     }
 }
 
+/**
+ * Trazi odgovarajucu ikonicu za prosledjen fajl
+ *
+ * @param file Fajl ciju ikonicu trazimo
+ * @return Id resursa koji sadrzi ikonicu
+ */
+fun getIconForFile(file: File): Int {
+    if(file.isDirectory) {
+        return if(file.listFiles().isEmpty())
+            R.drawable.folder_empty
+        else
+            R.drawable.folder_filled
+    } else {
+        return when(getTypeFromExtension(file.extension)) {
+            FileTypes.IMAGE -> R.drawable.file_image
+            FileTypes.AUDIO -> R.drawable.audio1
+            FileTypes.VIDEO -> R.drawable.file_media
+            FileTypes.HTML -> R.drawable.html
+            FileTypes.PDF -> R.drawable.pdf
+            FileTypes.ZIP -> R.drawable.zip
+            else -> R.drawable.file_text
+        }
+    }
+}
+
 private val sizeUnits: Array<String> = arrayOf("B", "KB", "MB", "GB")
 
+/**
+ * Vraca nisku koja predstavlja velicinu fajla u odgovarajucoj jedinici
+ *
+ * @param file Fajl ciju velicinu trazimo
+ * @return Velicina fajla [file]
+ */
 fun getSizeString(file: File): String {
     var size = file.length().toFloat()
     var unit = 0

@@ -10,6 +10,7 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import com.matf.filemanager.R
+import com.matf.filemanager.util.References
 
 import com.matf.filemanager.util.SaveStatus
 import com.matf.filemanager.util.StringEntry
@@ -17,7 +18,9 @@ import com.matf.filemanager.util.TextEditor
 import java.io.File
 import kotlin.math.abs
 
-// Klasa koja implementira otvaranje tekstualnih fajlova
+/**
+ * Klasa koja implementira otvaranje tekstualnih fajlova
+ */
 class TextFileActivity : AppCompatActivity() {
 
     private lateinit var textEditor: TextEditor
@@ -27,7 +30,6 @@ class TextFileActivity : AppCompatActivity() {
     private lateinit var btnUndo: Button
     private lateinit var btnRedo: Button
     private lateinit var btnSave : Button
-    private var cursorPosition: Int = 0
 
     private fun forceSync(){
         val currText: String = etFile.text.toString()
@@ -46,16 +48,16 @@ class TextFileActivity : AppCompatActivity() {
         btnRedo = findViewById(R.id.redobtn)
         btnSave = findViewById(R.id.savebtn)
 
-        val filePath = intent.getStringExtra("file_path")
+        val filePath = intent.getStringExtra(References.intentFilePath)
         tvTitle.text = File(filePath).name
         textEditor = TextEditor(filePath)
 
         etFile.setText(textEditor.getCurrentInstance()?.content)
 
         etFile.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(p0: Editable?) {}
+            override fun afterTextChanged(p0: Editable?) { return }
 
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {return }
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 val oldText: String = textEditor.getCurrentInstance()?.content.orEmpty()

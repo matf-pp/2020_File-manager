@@ -54,6 +54,17 @@ open class StateSaver<T> : Versionable<T>{
         return sb.toString()
     }
 
+    /**
+     * Da li je moguce vratiti se u prethodno stanje
+     *
+     * Treba da bude ista vrednost kao sto bi vratio goBack samo bez promena istorije
+     */
     fun canGoBack() : Boolean = history.size > 0 && currentInstanceIndex > 0
+
+    /**
+     * Da li je moguce vratiti se u sledece stanje
+     *
+     * Treba da bude ista vrednost kao sto bi vratio goForward samo bez promena istorije
+     */
     fun canGoForward() : Boolean = history.size > 0 && currentInstanceIndex < history.size - 1
 }

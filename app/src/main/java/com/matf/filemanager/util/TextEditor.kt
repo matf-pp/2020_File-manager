@@ -1,16 +1,16 @@
 package com.matf.filemanager.util
 
-import android.util.Log
 import com.matf.filemanager.versions.StateSaver
 import java.io.*
 import java.util.*
 
-// Klasa koja implementira tekst editor
+/**
+ * Klasa koja implementira tekst editor
+ */
 class TextEditor(private var filepath: String) : StateSaver<StringEntry>() {
     private var upToDate: Boolean = false
 
     init {
-        Log.d("INSIDE", "CONSTRUCTOR")
         upToDate = false
         refreshFile()
     }
@@ -19,7 +19,7 @@ class TextEditor(private var filepath: String) : StateSaver<StringEntry>() {
         try {
             reader.close()
         } catch (e: IOException) {
-            Log.d("ERROR", "reader.close()")
+            e.printStackTrace()
         }
     }
 
@@ -27,7 +27,7 @@ class TextEditor(private var filepath: String) : StateSaver<StringEntry>() {
         try {
             writer.close()
         } catch (e: IOException) {
-            Log.d("ERROR", "writer.close()")
+            e.printStackTrace()
         }
     }
 
@@ -35,26 +35,24 @@ class TextEditor(private var filepath: String) : StateSaver<StringEntry>() {
         val reader: BufferedReader = try {
             BufferedReader(FileReader(filepath))
         } catch (e: FileNotFoundException) {
-            Log.d("ERROR", "======== new FileReader() =========")
             return ""
         }
         val lines = ArrayList<String>()
         var line: String?
         try {
             while(true){
-                line = reader.readLine();
-                if(null == line) break;
-                lines.add(line);
+                line = reader.readLine()
+                if(null == line) break
+                lines.add(line)
             }
         } catch (e: IOException) {
-            Log.d("ERROR", "reader.readLine();")
             closeReader(reader)
             return ""
         }
         try {
             reader.close()
         } catch (e: IOException) {
-            Log.d("ERROR", "reader.close()")
+            e.printStackTrace()
         }
         val sb = StringBuilder()
         for (i in lines.indices) {
@@ -64,7 +62,6 @@ class TextEditor(private var filepath: String) : StateSaver<StringEntry>() {
             }
         }
         closeReader(reader)
-        Log.d("FROM READER", sb.toString())
         return sb.toString()
     }
 
@@ -85,7 +82,7 @@ class TextEditor(private var filepath: String) : StateSaver<StringEntry>() {
     }
 
     fun saveChanges(): SaveStatus {
-        if (upToDate) return SaveStatus.FILENOTCHANGED
+        if (upToDate) return SaveStatus.NOT_CHANGED
         val writer: FileWriter
         return try {
             writer = FileWriter(filepath)
@@ -94,10 +91,10 @@ class TextEditor(private var filepath: String) : StateSaver<StringEntry>() {
 
             closeWriter(writer)
             upToDate = true
-            SaveStatus.FILESAVED
+            SaveStatus.SAVED
         } catch (e: IOException) {
 
-            SaveStatus.ERRORSAVING
+            SaveStatus.ERROR_SAVING
         }
     }
 

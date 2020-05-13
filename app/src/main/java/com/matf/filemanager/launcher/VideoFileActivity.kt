@@ -2,7 +2,6 @@ package com.matf.filemanager.launcher
 
 import android.content.pm.ActivityInfo
 import android.os.Bundle
-import android.view.View
 import android.view.Window
 import android.view.WindowManager
 import android.widget.MediaController
@@ -10,12 +9,15 @@ import android.widget.Toast
 import android.widget.VideoView
 import androidx.appcompat.app.AppCompatActivity
 import com.matf.filemanager.R
+import com.matf.filemanager.util.References
 import kotlinx.android.synthetic.main.activity_video_file.*
 
-// Klasa koja implementira otvaranje video zapisa
+/**
+ * Klasa koja implementira otvaranje video zapisa
+ */
 class VideoFileActivity : AppCompatActivity() {
 
-    var continueFrom = 0
+    private var continueFrom = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +33,7 @@ class VideoFileActivity : AppCompatActivity() {
         setContentView(R.layout.activity_video_file)
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR
 
-        val path = intent.getStringExtra("file_path")
+        val path = intent.getStringExtra(References.intentFilePath)
 
         val videoView = findViewById<VideoView>(R.id.videoView)
         val mediaController = MediaController(this)
@@ -39,7 +41,7 @@ class VideoFileActivity : AppCompatActivity() {
         videoView.setMediaController(mediaController)
         videoView.keepScreenOn = true
 
-        videoView.setOnErrorListener { mediaPlayer, i, i2 ->
+        videoView.setOnErrorListener { _, _, _ ->
             Toast.makeText(applicationContext, "Error playing media", Toast.LENGTH_LONG).show()
             finish()
             false
