@@ -2,6 +2,10 @@ package com.matf.filemanager.util
 
 import java.io.File
 
+/**
+ * Osluskivac za promene i dogadjaje koje signalizira FileManager
+ * Koristi se za azuriranje liste fajlova kao i za njihovo otvaranje po zahtevu
+ */
 interface FileManagerChangeListener {
     /**
      * Callback funkcija koja je pozvana kada se promeni lista fajlova ili fajlovi u clipboard-u

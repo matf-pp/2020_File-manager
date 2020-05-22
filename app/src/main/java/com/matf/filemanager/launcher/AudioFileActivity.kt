@@ -41,8 +41,8 @@ class AudioFileActivity : AppCompatActivity() {
                         mp.setVolume(volumeNum, volumeNum)
                     }
                 }
-                override fun onStartTrackingTouch(p0: SeekBar?) {}
-                override fun onStopTrackingTouch(p0: SeekBar?) {}
+                override fun onStartTrackingTouch(p0: SeekBar?) { return }
+                override fun onStopTrackingTouch(p0: SeekBar?) { return }
             }
         )
 

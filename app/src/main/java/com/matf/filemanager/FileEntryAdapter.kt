@@ -10,6 +10,9 @@ import android.widget.*
 import com.matf.filemanager.manager.FileManager
 import com.matf.filemanager.util.*
 
+/**
+ * Adapter koji preslikava FileEntry model u odgovarajuci View za listu
+ */
 class FileEntryAdapter(context: Context) : BaseAdapter() {
 
     private var inflater: LayoutInflater = LayoutInflater.from(context)

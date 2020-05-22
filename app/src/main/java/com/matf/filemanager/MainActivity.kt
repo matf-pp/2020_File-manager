@@ -22,7 +22,9 @@ import com.matf.filemanager.manager.FileManager
 import com.matf.filemanager.service.FileActionReceiver
 import com.matf.filemanager.util.*
 
-
+/**
+ * Glavni ekran. Sadrzi listu fajlova u trenutnom direktorijumu i meni za navigaciju
+ */
 class MainActivity : AppCompatActivity() {
 
     private lateinit var sharedPreferences: SharedPreferences
