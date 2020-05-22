@@ -1,5 +1,6 @@
 # Android File Manager
 
+![Android CI](https://github.com/matf-pp/2020_File-manager/workflows/Android%20CI/badge.svg)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/60047fde3b904499a8ea49554edd35cb)](https://app.codacy.com/gh/matf-pp/2020_File-manager?utm_source=github.com&utm_medium=referral&utm_content=matf-pp/2020_File-manager&utm_campaign=Badge_Grade_Dashboard)
 
 ## Opis
@@ -12,9 +13,9 @@ Aplikacija podržava i dve teme: svetlu i tamnu koja se može ili podesiti ručn
 podešavanje na Android 10+ uređajima
 
 ## Primeri rada aplikacije
-![1](https://user-images.githubusercontent.com/49944800/81739135-1916fc80-949b-11ea-8cae-ce1fefb0f3e8.gif)
-![2](https://user-images.githubusercontent.com/49944800/81740726-b6733000-949d-11ea-99ad-9ba51b835e11.gif)
-![3](https://user-images.githubusercontent.com/49944800/81739192-2fbd5380-949b-11ea-888e-3201872e90fc.gif)
+![1](https://user-images.githubusercontent.com/6758619/82671923-ed84d680-9c3f-11ea-98c9-f36dad0f6e88.gif)
+![2](https://user-images.githubusercontent.com/6758619/82671935-f37ab780-9c3f-11ea-822f-4654f3ae4694.gif)
+![3](https://user-images.githubusercontent.com/6758619/82671942-f70e3e80-9c3f-11ea-8916-2f7e5436efbb.gif)
 
 ## Jezici i tehnologije
 Korišćen je programski jezik Kotlin u Android Studio okruženju. Za dizajn korisničkog interfejsa upotrebili smo [Google Material](https://material.io/develop/android/) biblioteku
